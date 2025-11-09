@@ -8,6 +8,29 @@ def __init__():
     self.main_admin = msg.sender
 
 
+# Decorator function
+def only():
+    """Decorator to restrict function access to admins only.
+
+    Usage
+    -----
+        @external
+        def admin_function():
+            Admins.only()
+
+    Future
+    ------
+    This function could be used as a decorator for other functions to enforce admin-only access.
+    But Vyper currently does not support decorators directly.
+
+        @admin
+        @external
+        def some_function():
+            ... 
+    """
+    assert self.is_admin(msg.sender), "Only admins can perform this action."
+
+
 @view
 @external
 def all() -> DynArray[address, 257]:
