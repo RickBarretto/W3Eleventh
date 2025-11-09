@@ -31,9 +31,10 @@ def must_be(_user: address):
     assert self.is_admin(_user), "Only admins can perform this action."
 
 
-@view
 @external
 def all() -> DynArray[address, 257]:
+    self.must_be(msg.sender)
+
     buffer: DynArray[address, 257] = empty(DynArray[address, 257])
 
     buffer.append(self.main_admin)
@@ -45,6 +46,8 @@ def all() -> DynArray[address, 257]:
 
 @external
 def includes(user: address) -> bool:
+    self.must_be(msg.sender)
+
     return self.is_admin(user)
 
 
@@ -55,7 +58,7 @@ def am_i() -> bool:
 
 @external
 def include(user: address):
-    assert self.is_admin(msg.sender), "Only admins can include new admins."
+    self.must_be(msg.sender)
     assert not self.is_admin(user), "User is already an admin."
 
     self.admins.append(user)
@@ -63,7 +66,7 @@ def include(user: address):
 
 @external
 def exclude(user: address):
-    assert self.is_admin(msg.sender), "Only admins can exclude admins."
+    self.must_be(msg.sender)
     assert self.is_admin(user), "User is not an admin."
 
     buffer: DynArray[address, 256] = empty(DynArray[address, 256])
