@@ -49,11 +49,9 @@ def set(cards: DynArray[Cards.Card, 128]):
     self.fill(cards)
 
 
-@internal
 def clear():
     self.rewardings = empty(DynArray[Cards.Card, 128])
 
-        
-@internal
+
 def fill(cards: DynArray[Cards.Card, 128]):
     self.rewardings = cards

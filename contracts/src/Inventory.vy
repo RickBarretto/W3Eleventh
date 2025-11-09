@@ -10,17 +10,14 @@ def deck_of(user: address) -> DynArray[Cards.Card, 64]:
     return self._deck_of(user)
 
 @view
-@internal
 def _deck_of(user: address) -> DynArray[Cards.Card, 64]:
     return self.decks[user]
 
 
-@internal
 def add_to(user: address, card: Cards.Card):
     self.decks[user].append(card)
 
 
-@internal
 def remove_from(user: address, index: uint256) -> Cards.Card:
     assert index < len(self.decks[user]), "Index out of bounds."
 
