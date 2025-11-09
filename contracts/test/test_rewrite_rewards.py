@@ -18,6 +18,16 @@ def test_initial_rewards(rewardings):
     assert len(rewardings.all()) == 7
 
 
+def test_rewrite_empty(rewardings):
+    rewardings.set([])
+    assert len(rewardings.all()) == 0
+
+
+def test_rewrite_half(rewardings, sample_card):
+    rewardings.set([sample_card] * 64)
+    assert len(rewardings.all()) == 64
+
+
 def test_rewrite_full(rewardings, sample_card):
     rewardings.set([sample_card] * 128)
     assert len(rewardings.all()) == 128
