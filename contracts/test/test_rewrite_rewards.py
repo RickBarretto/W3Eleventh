@@ -31,3 +31,10 @@ def test_rewrite_half(rewardings, sample_card):
 def test_rewrite_full(rewardings, sample_card):
     rewardings.set([sample_card] * 128)
     assert len(rewardings.all()) == 128
+
+def test_non_admin_cannot_set(rewardings):
+    non_admin = boa.env.generate_address()
+
+    with boa.env.prank(non_admin):
+        with boa.reverts("Only admins can set rewardings."):
+            rewardings.set([])
