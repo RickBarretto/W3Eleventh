@@ -21,54 +21,33 @@ ONE_DAY: constant(uint256) = 24 * ONE_HOUR
 ONE_WEEK: constant(uint256) = 7 * ONE_DAY
 
 # @dev Each auction listed in the marketplace
-shop: public(DynArray[Auction, 512])
+shop: DynArray[Auction, 512]
 
 # @dev Each user can expose only one card at a time
-auctions: public(HashMap[address, Auction]) 
+auctions: HashMap[address, Auction]
 
 # @dev Each user can propose only one card at a time
-proposals: public(HashMap[address, Proposal])
+proposals: HashMap[address, Proposal]
 
-
-@deploy
-def __init__():
-    pass
 
 @external
-def my_auctions() -> Auction:
-    return self.auctions[msg.sender]
+def auction_of(_owner: address) -> Auction:
+    return self.auctions[_owner]
 
 @external
-def my_proposals() -> Proposal:
-    return self.proposals[msg.sender]
+def auction_at(_index: uint256) -> Auction:
+    return self.shop[_index]
 
 @external
-def auction_card(card: Cards.Card, days: uint256):
-    assert days > 0, "Auction duration must be at least one day."
-    assert self.auctions[msg.sender].seller == empty(address), "You already have an active auction."
-
+def auction_card(_card: Cards.Card, days: uint256) -> uint256:
     auction: Auction = Auction(
         seller=msg.sender,
-        card=card,
-        proposals=empty(DynArray[Proposal, 64]),
+        card=_card,
+        proposals=[],
         end_at=block.timestamp + days * ONE_DAY
     )
 
     self.shop.append(auction)
     self.auctions[msg.sender] = auction
 
-@external
-def propose(auction_index: uint256, card: Cards.Card):
-    auction: Auction = self.shop[auction_index]
-
-    assert block.timestamp < auction.end_at, "Auction has ended"
-    assert auction.seller != msg.sender, "Cannot propose on your own auction."
-    assert self.proposals[msg.sender].proposer == empty(address), "You have already proposed."
-
-    proposal: Proposal = Proposal(
-        proposer=msg.sender,
-        offer=card,
-    )
-
-    auction.proposals.append(proposal)
-    self.proposals[msg.sender] = proposal
+    return len(self.shop) - 1
