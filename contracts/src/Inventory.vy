@@ -24,6 +24,12 @@ def mint_card_to(user: address, card: Cards.Card):
 def _deck_of(user: address) -> DynArray[Cards.Card, 64]:
     return self.decks[user]
 
+def has_card(user: address, card_id: uint256) -> bool:
+    deck: DynArray[Cards.Card, 64] = self.decks[user]
+    for card: Cards.Card in deck:
+        if card.id == card_id:
+            return True
+    return False
 
 def add_to(user: address, card: Cards.Card):
     self.decks[user].append(card)
