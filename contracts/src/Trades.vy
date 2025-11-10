@@ -34,9 +34,6 @@ proposals: HashMap[address, Proposal]
 def auction_of(_owner: address) -> Auction:
     return self.auctions[_owner]
 
-@external
-def auction_at(_index: uint256) -> Auction:
-    return self.shop[_index]
 
 @external
 def auction_card(_card: Cards.Card, days: uint256) -> uint256:
@@ -45,8 +42,8 @@ def auction_card(_card: Cards.Card, days: uint256) -> uint256:
     is_owner: bool = existing.seller == msg.sender
     is_alive: bool = existing.end_at > block.timestamp
     is_active: bool = is_owner and is_alive
-    if is_active:
-        raise "You already have an active auction."
+
+    assert not is_active, "You already have an active auction."
 
     auction: Auction = Auction(
         seller=msg.sender,
