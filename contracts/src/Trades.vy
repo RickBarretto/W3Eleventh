@@ -56,3 +56,34 @@ def auction_card(_card: Cards.Card, days: uint256) -> uint256:
     self.auctions[msg.sender] = auction
 
     return len(self.shop) - 1
+
+@external
+def propose(to: address, card: Cards.Card) -> Proposal:
+    proposal: Proposal = Proposal(
+        proposer=msg.sender,
+        offer=card
+    )
+
+    self.auctions[to].proposals.append(proposal)
+    self.proposals[msg.sender] = proposal
+
+    return proposal
+
+@external
+def list_outbox() -> Proposal:
+    return self.proposals[msg.sender]
+
+@external
+def list_inbox() -> DynArray[Proposal, 64]:
+    auction: Auction = self.auctions[msg.sender]
+    return auction.proposals
+
+@external
+def empty_outbox() -> bool:
+    proposal: Proposal = self.proposals[msg.sender]
+    return proposal.proposer == empty(address)
+
+@external
+def empty_inbox() -> bool:
+    auction: Auction = self.auctions[msg.sender]
+    return len(auction.proposals) > 0
