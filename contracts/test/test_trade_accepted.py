@@ -55,7 +55,7 @@ def on_proposal(trader_a, trader_b, decks, trades):
     trader_b, card_y = trader_b
 
     with boa.env.prank(trader_a):
-        trades.propose(trader_b, card_x, card_y)
+        trades.propose(trader_b, card_x.id, card_y.id)
 
     return trader_a, trader_b, card_x, card_y
 
@@ -65,7 +65,7 @@ def on_acceptance(on_proposal, trades):
     trader_a, trader_b, card_x, card_y = on_proposal
 
     with boa.env.prank(trader_b):
-        trades.accept(trader_a, card_x, card_y)
+        trades.accept(trader_a)
 
 
 @then("the Trade should happen")
