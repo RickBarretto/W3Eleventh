@@ -19,9 +19,12 @@ next_card_id: public(uint256)
 def __init__():
     self.next_card_id = 1
 
-
 @external
 def card(_name: String[64], _power: uint8) -> Card:
+    return self._card(_name, _power)
+
+
+def _card(_name: String[64], _power: uint8) -> Card:
     card_id: uint256 = self.new_id()
     new_card: Card = Card(
         id=card_id,
