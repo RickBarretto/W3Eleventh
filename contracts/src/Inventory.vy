@@ -24,6 +24,20 @@ def mint_card_to(user: address, card: Cards.Card):
 def _deck_of(user: address) -> DynArray[Cards.Card, 64]:
     return self.decks[user]
 
+def card_of(user: address, id: uint256) -> Cards.Card:
+    deck: DynArray[Cards.Card, 64] = self.decks[user]
+    for card: Cards.Card in deck:
+        if card.id == id:
+            return card
+    raise "Card not found."
+
+def index_of(user: address, id: uint256) -> uint256:
+    deck: DynArray[Cards.Card, 64] = self.decks[user]
+    for i: uint256 in range(64):
+        if deck[i].id == id:
+            return i
+    raise "Card not found."
+
 def has_card(user: address, card_id: uint256) -> bool:
     deck: DynArray[Cards.Card, 64] = self.decks[user]
     for card: Cards.Card in deck:
