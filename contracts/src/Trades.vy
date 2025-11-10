@@ -3,7 +3,8 @@
 
 import Cards
 import Inventory
-uses: Inventory
+
+initializes: Inventory
  
 struct Proposal:
     by: address
@@ -24,6 +25,11 @@ event TradeRejected:
     at: uint256
 
 proposals: HashMap[address, Proposal]
+
+
+@deploy
+def __init__():
+    Inventory.__init__()
 
 
 @external
@@ -50,11 +56,16 @@ def accept(_proposer: address):
     assert Inventory.has_card(proposer, proposal.given), "Proposer no longer owns the offered card"
     assert Inventory.has_card(receiver, proposal.over), "Receiver no longer owns the requested card"
 
-    Inventory.remove_from(proposer, proposal.given)
-    Inventory.remove_from(receiver, proposal.over)
+    given: Cards.Card = Inventory.card_of(proposer, proposal.given)
+    over: Cards.Card = Inventory.card_of(receiver, proposal.over)
+    given_idx: uint256 = Inventory.index_of(proposer, proposal.given)
+    over_idx: uint256 = Inventory.index_of(receiver, proposal.over)
 
-    Inventory.add_to(proposer, proposal.over)
-    Inventory.add_to(receiver, proposal.given)
+    Inventory.remove_from(proposer, given_idx)
+    Inventory.remove_from(receiver, over_idx)
+
+    Inventory.add_to(proposer, over)
+    Inventory.add_to(receiver, given)
 
     self.proposals[proposer] = empty(Proposal)
 
