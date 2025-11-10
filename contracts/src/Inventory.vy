@@ -16,6 +16,10 @@ def __init__():
 def deck_of(user: address) -> DynArray[Cards.Card, 64]:
     return self._deck_of(user)
 
+@external
+def mint_card_to(user: address, card: Cards.Card):
+    Admins.must_be(msg.sender)
+    self.add_to(user, card)
 
 def _deck_of(user: address) -> DynArray[Cards.Card, 64]:
     return self.decks[user]
