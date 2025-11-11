@@ -3,5 +3,7 @@
         "contracts"
     ],
     "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true
+    "python.testing.pytestEnabled": true,
+    "python-envs.defaultEnvManager": "poetry",
+    "python-envs.pythonProjects": []
 }

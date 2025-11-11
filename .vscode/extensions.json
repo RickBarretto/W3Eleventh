@@ -1,0 +1,12 @@
+{
+    "recommendations": [
+        "eamodio.gitlens",
+        "ms-python.vscode-pylance",
+        "ms-python.python",
+        "ms-python.debugpy",
+        "ms-python.vscode-python-envs",
+        "kevinrose.vsc-python-indent",
+        "tintinweb.vscode-vyper",
+        "ms-vscode-remote.remote-containers"
+    ]
+}
