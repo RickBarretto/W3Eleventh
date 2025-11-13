@@ -33,7 +33,7 @@ def have_multiples(admins):
 
 @when("I list all admins", target_fixture="actual_admins")
 def list_admins(admins):
-    return admins.list()
+    return admins.all()
 
 
 @then("I should see the list of all registered admins")
