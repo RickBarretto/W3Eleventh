@@ -17,11 +17,11 @@ def test_list_all_admins():
 @given("I am an Admin")
 def is_admin(admins):
     assert admins.is_admin(boa.env.eoa)
-    return boa.env.eoa
+    boa.env.eoa
 
 
 @given("there are multiple admins registered", target_fixture="expected_admins")
-def have_multiples():
+def have_multiples(admins):
     new_admin = boa.env.generate_address()
     admins.add(new_admin)
     
@@ -32,10 +32,10 @@ def have_multiples():
 
 
 @when("I list all admins", target_fixture="actual_admins")
-def list_admins(admins, admin_list):
-    return admins.list(address)
+def list_admins(admins):
+    return admins.list()
 
 
 @then("I should see the list of all registered admins")
-def check_admin_list(admins, expected_admins, actual_admins):
-    assert actual_admins == expected
+def check_admin_list(expected_admins, actual_admins):
+    assert actual_admins == expected_admins
