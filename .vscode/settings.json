@@ -4,7 +4,6 @@
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "python-envs.defaultEnvManager": "poetry",
     "python-envs.pythonProjects": [],
     "cucumber.features": [
         "src/test/**/*.feature",
