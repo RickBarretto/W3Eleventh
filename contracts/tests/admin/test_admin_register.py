@@ -29,8 +29,7 @@ def address():
 def register(admins, address):
     admins.add(address)
 
+
 @then("the new admin should be registered successfully")
 def check_admin_registered(admins, address):
     assert admins.is_admin(address)
-
-

@@ -9,6 +9,7 @@ from contracts.src import Admin
 def admins():
     return Admin.deploy()
 
+
 @scenario("Admin.feature", "Listing All Admins")
 def test_list_all_admins():
     pass
