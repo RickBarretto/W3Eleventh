@@ -43,7 +43,7 @@ def candidate() -> Candidate:
 
 
 @scenario("Admin.feature", "Successfully Registering a New Admin")
-def test_successful_registering():
+def test_by_owner():
     pass
 
 @when("I register this new address as a new admin")
@@ -57,7 +57,7 @@ def should_be_registered(admins, candidate: Candidate):
 
 
 @scenario("Admin.feature", "Customer Trying to Register New Admin")
-def test_customer_trying_to_register_new_admin():
+def test_by_customer():
     pass
 
 @when("I try to register this new address as admin")
@@ -74,7 +74,7 @@ def should_rollover(admins, customer: Customer, candidate: Candidate):
 
 
 @scenario("Admin.feature", "Admin Trying to Register New Admin")
-def test_admin_trying_to_register_new_admin():
+def test_by_admin():
     pass
 
 @when("I try to register this new address as admin (Admin)")
