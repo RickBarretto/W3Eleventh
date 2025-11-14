@@ -16,20 +16,19 @@ def test_register_admin():
 
 
 @given("I am an Admin")
-def is_admin(admins):
+def admin(admins):
     assert admins.is_admin(boa.env.eoa)
 
-
-@given("I have some address", target_fixture="address")
-def address():
+@given("I have some address", target_fixture="some_address")
+def some_address():
     return boa.env.generate_address()
 
 
 @when("I register this new address as a new admin")
-def register(admins, address):
-    admins.add(address)
+def register(admins, some_address):
+    admins.add(some_address)
 
 
 @then("the new admin should be registered successfully")
-def check_admin_registered(admins, address):
-    assert admins.is_admin(address)
+def check_admin_registered(admins, some_address):
+    assert admins.is_admin(some_address)
