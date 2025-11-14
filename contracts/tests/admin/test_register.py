@@ -46,7 +46,7 @@ def candidate() -> Candidate:
 def test_by_owner():
     pass
 
-@when("I register this new address as a new admin")
+@when("I try to register Candidate as a new admin¹")
 def try_register(admins, candidate: Candidate):
     admins.add(candidate)
 
@@ -60,11 +60,11 @@ def should_be_registered(admins, candidate: Candidate):
 def test_by_customer():
     pass
 
-@when("I try to register this new address as admin")
+@when("I try to register Candidate as a new admin²")
 def try_register():
     pass
 
-@then('it should rollover "Must be EOA"')
+@then('it should rollover "Must be EOA"¹')
 def should_rollover(admins, customer: Customer, candidate: Candidate):
     with boa.env.prank(customer):
         with boa.reverts("Must be EOA"):
@@ -77,11 +77,11 @@ def should_rollover(admins, customer: Customer, candidate: Candidate):
 def test_by_admin():
     pass
 
-@when("I try to register this new address as admin (Admin)")
-def try_to_register():
+@when("I try to register Candidate as a new admin³")
+def try_register():
     pass
 
-@then('it should rollover "Must be EOA" (Admin)')
+@then('it should rollover "Must be EOA"²')
 def should_rollover(admins, admin: Administrator, candidate: Candidate):
     with boa.env.prank(admin):
         with boa.reverts("Must be EOA"):

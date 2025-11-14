@@ -20,7 +20,7 @@ def admin_user(admins, some_user):
     assert admins.is_admin(some_user)
     return some_user
 
-@given("I am not an Admin", target_fixture="non_admin")
+@given("I am not an Administrator", target_fixture="non_admin")
 def non_admin_user(admins, some_user):
     assert not admins.is_admin(some_user)
     return some_user
@@ -32,7 +32,7 @@ def test_verify_admin():
     pass
 
 
-@when("I try to verify if I am an Admin")
+@when("I try to verify if I am an Admin¹")
 def verification():
     pass
 
@@ -48,7 +48,7 @@ def test_verify_non_admin():
     pass
 
 
-@when("I try to verify if I am an Admin")
+@when("I try to verify if I am an Administrator²")
 def verification():
     pass
 
