@@ -25,6 +25,12 @@ Feature: Admin Management
         When I try to register this new address as admin
         Then it should rollover "Must be EOA"
 
+    Scenario: No Permission to Register (Admin)
+        Given I am a not Externally Owned Admin
+            And I have some address
+        When I try to register this new address as admin (Admin)
+        Then it should rollover "Must be EOA" (Admin)
+
 
     Scenario: Listing All Admins
         Given I am an Admin 
