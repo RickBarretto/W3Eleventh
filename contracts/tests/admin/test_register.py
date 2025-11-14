@@ -10,25 +10,45 @@ def admins():
     return Admin.deploy()
 
 
-@scenario("Admin.feature", "Registering a New Admin")
-def test_register_admin():
-    pass
-
-
 @given("I am an Admin")
 def admin(admins):
     assert admins.is_admin(boa.env.eoa)
+
+@given("I am not an Admin", target_fixture="non_admin")
+def non_admin(admins):
+    some_address = boa.env.generate_address()
+    assert not admins.is_admin(some_address)
+    return some_address
 
 @given("I have some address", target_fixture="some_address")
 def some_address():
     return boa.env.generate_address()
 
 
+
+@scenario("Admin.feature", "Registering a New Admin")
+def test_register_admin():
+    pass
+
 @when("I register this new address as a new admin")
 def register(admins, some_address):
     admins.add(some_address)
 
-
 @then("the new admin should be registered successfully")
 def check_admin_registered(admins, some_address):
     assert admins.is_admin(some_address)
+
+
+
+@scenario("Admin.feature", "No Permission to Register")
+def test_register_admin_by_user():
+    pass
+
+@when("I try to register this new address as admin")
+def register_attempt(admins, non_admin, some_address):
+    with boa.reverts("Must be admin"):
+        admins.add(some_address, sender=non_admin)
+
+@then('it should rollover "Insufficient permission"')
+def should_rollover(admins, some_address):
+    assert not admins.is_admin(some_address)
