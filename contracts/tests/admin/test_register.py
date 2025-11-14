@@ -16,6 +16,13 @@ def admin(admins):
     assert admins.is_admin(eoa)
     return eoa
 
+@given("I am a not Externally Owned Admin", target_fixture="admin_user")
+def admin_user(admins):
+    admin_user = boa.env.generate_address()
+    admins.add(admin_user)
+    assert admins.is_admin(admin_user)
+    return admin_user
+
 @given("I am not an Admin", target_fixture="non_admin")
 def non_admin(admins):
     some_address = boa.env.generate_address()
@@ -53,5 +60,21 @@ def register_attempt(admins, non_admin, some_address):
         admins.add(some_address, sender=non_admin)
 
 @then('it should rollover "Must be EOA"')
+def should_rollover(admins, some_address):
+    assert not admins.is_admin(some_address)
+
+
+
+@scenario("Admin.feature", "No Permission to Register (Admin)")
+def test_register_admin_by_user_admin():
+    pass
+
+@when("I try to register this new address as admin (Admin)")
+def register_attempt_admin(admins, admin_user, some_address):
+    with boa.env.prank(admin_user):
+        with boa.reverts("Must be EOA"):
+            admins.add(some_address)
+
+@then('it should rollover "Must be EOA" (Admin)')
 def should_rollover(admins, some_address):
     assert not admins.is_admin(some_address)
