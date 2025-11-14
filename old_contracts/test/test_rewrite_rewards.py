@@ -11,7 +11,7 @@ def cards():
 
 @pytest.fixture
 def sample_card(cards):
-    return cards.card("CR7", 99)
+    return cards.new("CR7", 99)
 
 
 def test_initial_rewards(rewardings):

@@ -1,3 +1,5 @@
+# pragma version ^0.4.3
+# pragma nonreentrancy on 
 
 main_admin: address
 admins: DynArray[address, 256]
@@ -77,7 +79,7 @@ def exclude(user: address):
 
     self.admins = buffer
 
-
+@view
 def is_admin(user: address) -> bool:
     is_main: bool = user == self.main_admin
     is_sub: bool = user in self.admins
