@@ -55,12 +55,14 @@ def test_customer_trying_to_register_new_admin():
 
 @when("I try to register this new address as admin")
 def register_attempt(admins, customer, candidate):
+    pass
+
+@then('it should rollover "Must be EOA"')
+def should_rollover(admins, candidate):
     with boa.env.prank(customer):
         with boa.reverts("Must be EOA"):
             admins.add(candidate)
 
-@then('it should rollover "Must be EOA"')
-def should_rollover(admins, candidate):
     assert not admins.is_admin(candidate)
 
 
@@ -69,11 +71,13 @@ def test_admin_trying_to_register_new_admin():
     pass
 
 @when("I try to register this new address as admin (Admin)")
-def register_attempt_admin(admins, admin, candidate):
+def try_to_register(admins, admin, candidate):
+    pass
+
+@then('it should rollover "Must be EOA" (Admin)')
+def should_rollover(admins, candidate):
     with boa.env.prank(admin):
         with boa.reverts("Must be EOA"):
             admins.add(candidate)
 
-@then('it should rollover "Must be EOA" (Admin)')
-def should_rollover(admins, candidate):
     assert not admins.is_admin(candidate)
