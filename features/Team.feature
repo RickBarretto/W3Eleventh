@@ -3,16 +3,16 @@ Feature: Team Management
     Scenario: Creating a Team
         Given I want to create a new team named "Warriors"
         When I create the team "Warriors"
-        Then I should have a Team associated with my address
-            And this name should be "Warriors"
-            And this ratio should be zeroed
+        Then I should have this team associated with my address
+            And its name should be "Warriors"
+            And its should have 0 lost and won
 
     Scenario: Winning a match
-        Given a Team "Warriors" with 0 wins
+        Given a Team "Warriors" with 0 won
         When it wins a match
-        Then it has 1 wins
+        Then it has 1 won
 
     Scenario: Losing a match
-        Given a Team "Warriors" with 0 loses
+        Given a Team "Warriors" with 0 lost
         When it loses a match
-        Then it has 1 loses
+        Then it has 1 lost
