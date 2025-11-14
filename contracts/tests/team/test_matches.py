@@ -50,6 +50,6 @@ def have_won(teams):
 
 @then("it has 1 lost")
 def team_should_exist(teams):
-    team = teams.teams(boa.env.eoa)
+    team = teams.mine()
     assert team.won == 0
     assert team.lost == 1
