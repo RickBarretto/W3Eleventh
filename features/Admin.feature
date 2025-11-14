@@ -1,5 +1,18 @@
 Feature: Admin Management
 
+    Scenario: Verifying Administrator
+        Given I am some User
+            And I am also an Admin
+        When I try to verify if I am an Admin
+        Then the verification should pass
+
+    Scenario: Verifying non-Administrator User
+        Given I am some User
+            But I am not an Admin
+        When I try to verify if I am an Admin
+        Then the verification should fail
+
+
     Scenario: Registering a New Admin
         Given I am an Admin
             And I have some address
@@ -24,9 +37,3 @@ Feature: Admin Management
             And there are multiple admins registered
         When I request a list of admins
         Then it should rollover "Insufficient permission"
-
-
-    Scenario: Verifying Admin Privileges
-        Given I am a user
-        When I try to access admin functionalities
-        Then the admin privileges should be verified for me
