@@ -40,11 +40,11 @@ def test_successful_registering():
     pass
 
 @when("I register this new address as a new admin")
-def register(admins, owner, candidate):
+def try_register(admins, owner, candidate):
     admins.add(candidate)
 
 @then("the new admin should be registered successfully")
-def check_admin_registered(admins, candidate):
+def should_be_registered(admins, candidate):
     assert admins.is_admin(candidate)
 
 
@@ -54,7 +54,7 @@ def test_customer_trying_to_register_new_admin():
     pass
 
 @when("I try to register this new address as admin")
-def register_attempt(admins, customer, candidate):
+def try_register(admins, customer, candidate):
     pass
 
 @then('it should rollover "Must be EOA"')
