@@ -13,19 +13,19 @@ Feature: Admin Management
         Then the verification should fail
 
 
-    Scenario: Registering a New Admin
+    Scenario: Successfully Registering a New Admin
         Given I'm an Owner
             And I have a Candidate
         When I register this new address as a new admin
         Then the new admin should be registered successfully
 
-    Scenario: No Permission to Register
+    Scenario: Customer Trying to Register New Admin
         Given I'm a Customer
             And I have a Candidate
         When I try to register this new address as admin
         Then it should rollover "Must be EOA"
 
-    Scenario: No Permission to Register (Admin)
+    Scenario: Admin Trying to Register New Admin
         Given I'm an Administrator
             And I have a Candidate
         When I try to register this new address as admin (Admin)

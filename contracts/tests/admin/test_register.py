@@ -35,8 +35,8 @@ def candidate():
 
 
 
-@scenario("Admin.feature", "Registering a New Admin")
-def test_register_admin():
+@scenario("Admin.feature", "Successfully Registering a New Admin")
+def test_successful_registering():
     pass
 
 @when("I register this new address as a new admin")
@@ -49,8 +49,8 @@ def check_admin_registered(admins, candidate):
 
 
 
-@scenario("Admin.feature", "No Permission to Register")
-def test_register_admin_by_user():
+@scenario("Admin.feature", "Customer Trying to Register New Admin")
+def test_customer_trying_to_register_new_admin():
     pass
 
 @when("I try to register this new address as admin")
@@ -64,8 +64,8 @@ def should_rollover(admins, candidate):
     assert not admins.is_admin(candidate)
 
 
-@scenario("Admin.feature", "No Permission to Register (Admin)")
-def test_register_admin_by_user_admin():
+@scenario("Admin.feature", "Admin Trying to Register New Admin")
+def test_admin_trying_to_register_new_admin():
     pass
 
 @when("I try to register this new address as admin (Admin)")
