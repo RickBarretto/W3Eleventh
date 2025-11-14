@@ -11,7 +11,7 @@ def admins():
 
 
 @given("I am an Externally Owned Admin", target_fixture="eoa")
-def admin(admins):
+def externally_owned_admin(admins):
     eoa = boa.env.eoa
     assert admins.is_admin(eoa)
     return eoa
@@ -41,8 +41,7 @@ def test_register_admin():
 
 @when("I register this new address as a new admin")
 def register(admins, eoa, some_address):
-    with boa.env.prank(eoa):
-        admins.add(some_address)
+    admins.add(some_address)
 
 @then("the new admin should be registered successfully")
 def check_admin_registered(admins, some_address):
