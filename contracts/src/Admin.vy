@@ -21,6 +21,7 @@ def add(new_admin: address):
 @external
 def all() -> DynArray[address, 128]:
     """Get the list of all admin addresses."""
+    assert self._is_admin(msg.sender), "Must be Admin"
     return self.admin
 
 
