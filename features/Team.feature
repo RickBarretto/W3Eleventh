@@ -5,7 +5,7 @@ Feature: Team Management
         When I create the team "Warriors"
         Then I should own this team
             And its name should be "Warriors"
-            And its should have 0 lost and won
+            And it should have 0 lost and won
 
     Scenario: Winning a match
         Given a Team "Warriors" with 0 won
