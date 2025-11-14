@@ -23,7 +23,7 @@ Feature: Admin Management
         Given I am not an Admin
             And I have some address
         When I try to register this new address as admin
-        Then it should rollover "Insufficient permission"
+        Then it should rollover "Must be EOA"
 
 
     Scenario: Listing All Admins

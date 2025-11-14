@@ -12,7 +12,7 @@ def __init__():
 @external
 def add(new_admin: address):
     """Register a new admin address. Only callable by the owner."""
-    assert self._is_admin(msg.sender), "Must be admin"
+    assert msg.sender == self.owner, "Must be EOA"
     assert new_admin not in self.admin, "Already admin"
     self.admin.append(new_admin)
 

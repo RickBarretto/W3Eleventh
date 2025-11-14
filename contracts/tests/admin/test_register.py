@@ -49,9 +49,9 @@ def test_register_admin_by_user():
 
 @when("I try to register this new address as admin")
 def register_attempt(admins, non_admin, some_address):
-    with boa.reverts("Must be admin"):
+    with boa.reverts("Must be EOA"):
         admins.add(some_address, sender=non_admin)
 
-@then('it should rollover "Insufficient permission"')
+@then('it should rollover "Must be EOA"')
 def should_rollover(admins, some_address):
     assert not admins.is_admin(some_address)
