@@ -2,7 +2,7 @@ Feature: Admin Management
 
     Scenario: Verifying Administrator
         Given I am some User
-            And I am also an Admin
+            And I am an Admin
         When I try to verify if I am an Admin
         Then the verification should pass
 
