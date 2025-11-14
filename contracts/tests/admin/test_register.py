@@ -30,6 +30,13 @@ def admin(admins) -> Administrator:
     assert admins.is_admin(address)
     return address
 
+@given("an Administrator", target_fixture="registered_admin")
+def registered_admin(admins) -> Administrator:
+    address: Address = boa.env.generate_address()
+    admins.add(address)
+    assert admins.is_admin(address)
+    return address
+
 @given("I'm a Customer", target_fixture="customer")
 def customer(admins) -> Customer:
     address: Address = boa.env.generate_address()
@@ -53,6 +60,22 @@ def try_register(admins, candidate: Candidate):
 @then("the new admin should be registered successfully")
 def should_be_registered(admins, candidate: Candidate):
     assert admins.is_admin(candidate)
+
+    
+
+@scenario("Admin.feature", "Owner Trying to Register Existing Admin")
+def test_already_admin():
+    pass
+
+@when("I try to re-register this Administrator")
+def try_register_again():
+    pass
+
+@then('it should rollover "Already admin"')
+def should_rollover(admins, registered_admin):
+    with boa.reverts("Already admin"):
+        admins.add(registered_admin)
+    assert admins.is_admin(registered_admin)
 
 
 

@@ -19,6 +19,12 @@ Feature: Admin Management
         When I try to register Candidate as a new admin¹
         Then the new admin should be registered successfully
 
+    Scenario: Owner Trying to Register Existing Admin
+        Given I'm an Owner
+            And an Administrator
+        When I try to re-register this Administrator
+        Then it should rollover "Already admin"
+
     Scenario: Customer Trying to Register New Admin
         Given I'm a Customer
             And I have a Candidate
