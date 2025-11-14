@@ -29,8 +29,8 @@ def customer(admins):
     assert not admins.is_admin(address)
     return address
 
-@given("I have some address", target_fixture="some_address")
-def some_address():
+@given("I have a Candidate", target_fixture="candidate")
+def candidate():
     return boa.env.generate_address()
 
 
@@ -40,12 +40,12 @@ def test_register_admin():
     pass
 
 @when("I register this new address as a new admin")
-def register(admins, owner, some_address):
-    admins.add(some_address)
+def register(admins, owner, candidate):
+    admins.add(candidate)
 
 @then("the new admin should be registered successfully")
-def check_admin_registered(admins, some_address):
-    assert admins.is_admin(some_address)
+def check_admin_registered(admins, candidate):
+    assert admins.is_admin(candidate)
 
 
 
@@ -54,15 +54,14 @@ def test_register_admin_by_user():
     pass
 
 @when("I try to register this new address as admin")
-def register_attempt(admins, customer, some_address):
+def register_attempt(admins, customer, candidate):
     with boa.env.prank(customer):
         with boa.reverts("Must be EOA"):
-            admins.add(some_address)
+            admins.add(candidate)
 
 @then('it should rollover "Must be EOA"')
-def should_rollover(admins, some_address):
-    assert not admins.is_admin(some_address)
-
+def should_rollover(admins, candidate):
+    assert not admins.is_admin(candidate)
 
 
 @scenario("Admin.feature", "No Permission to Register (Admin)")
@@ -70,11 +69,11 @@ def test_register_admin_by_user_admin():
     pass
 
 @when("I try to register this new address as admin (Admin)")
-def register_attempt_admin(admins, admin, some_address):
+def register_attempt_admin(admins, admin, candidate):
     with boa.env.prank(admin):
         with boa.reverts("Must be EOA"):
-            admins.add(some_address)
+            admins.add(candidate)
 
 @then('it should rollover "Must be EOA" (Admin)')
-def should_rollover(admins, some_address):
-    assert not admins.is_admin(some_address)
+def should_rollover(admins, candidate):
+    assert not admins.is_admin(candidate)

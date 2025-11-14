@@ -15,19 +15,19 @@ Feature: Admin Management
 
     Scenario: Registering a New Admin
         Given I'm an Owner
-            And I have some address
+            And I have a Candidate
         When I register this new address as a new admin
         Then the new admin should be registered successfully
 
     Scenario: No Permission to Register
         Given I'm a Customer
-            And I have some address
+            And I have a Candidate
         When I try to register this new address as admin
         Then it should rollover "Must be EOA"
 
     Scenario: No Permission to Register (Admin)
         Given I'm an Administrator
-            And I have some address
+            And I have a Candidate
         When I try to register this new address as admin (Admin)
         Then it should rollover "Must be EOA" (Admin)
 
