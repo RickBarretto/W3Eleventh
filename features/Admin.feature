@@ -14,7 +14,7 @@ Feature: Admin Management
 
 
     Scenario: Registering a New Admin
-        Given I am an Externally Owned Admin
+        Given I'm an Owner
             And I have some address
         When I register this new address as a new admin
         Then the new admin should be registered successfully

@@ -10,11 +10,11 @@ def admins():
     return Admin.deploy()
 
 
-@given("I am an Externally Owned Admin", target_fixture="eoa")
-def externally_owned_admin(admins):
-    eoa = boa.env.eoa
-    assert admins.is_admin(eoa)
-    return eoa
+@given("I'm an Owner", target_fixture="owner")
+def owner(admins):
+    owner = boa.env.eoa
+    assert admins.is_admin(owner)
+    return owner
 
 @given("I am a not Externally Owned Admin", target_fixture="admin_user")
 def admin_user(admins):
@@ -40,7 +40,7 @@ def test_register_admin():
     pass
 
 @when("I register this new address as a new admin")
-def register(admins, eoa, some_address):
+def register(admins, owner, some_address):
     admins.add(some_address)
 
 @then("the new admin should be registered successfully")
