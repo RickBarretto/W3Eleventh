@@ -3,7 +3,7 @@ Feature: Team Management
     Scenario: Creating a Team
         Given I want to create a new team named "Warriors"
         When I create the team "Warriors"
-        Then I should have this team associated with my address
+        Then I should own this team
             And its name should be "Warriors"
             And its should have 0 lost and won
 
