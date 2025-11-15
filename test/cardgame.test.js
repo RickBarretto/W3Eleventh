@@ -50,42 +50,34 @@ describe("CardGame (basic TDD tests)", function () {
     });
 
     it("determines match winners based on power and handles draws", async function () {
-        const a = host.address;
-        const b = guest.address;
-        // Reward two cards: id 1 -> power 90 to p1, id 2 -> power 70 to p2
-        const txA = await cardGame.awardUniqueCardTo(a, "Striker", 90);
-        const idA = (await txA.wait()).events.find((e) => e.event === 'CardWasAwarded').args.cardId.toNumber();
-        const txB = await cardGame.awardUniqueCardTo(b, "Defender", 70);
-        const idB = (await txB.wait()).events.find((e) => e.event === 'CardWasAwarded').args.cardId.toNumber();
+        const hostAddress = host.address;
+        const guestAddress = guest.address;
 
-        // play the match (state-changing) so pending reward is recorded
-        await cardGame.conductMatchBetween(idA, idB);
-        // winner's owner (player1) should have one pending reward
-        expect((await cardGame.pendingRewardCountFor(a)).toNumber()).to.equal(1);
+        const hostsCard = await cardIdFromTransaction(
+            await cardGame.awardUniqueCardTo(hostAddress, "Striker", 90)
+        );
 
-        // claim the reward as player1 and capture the claimed card id
-        const claimTx = await cardGame.connect(host).claimPendingReward();
-        const claimRc = await claimTx.wait();
-        const rewardEvent = claimRc.events.find((e) => e.event === 'RewardWasClaimed');
-        const claimedId = rewardEvent.args.cardId.toNumber();
-        // after claiming, team card count increments by 1
-        expect((await cardGame.numberOfCardsInTeam(a)).toNumber()).to.equal(2);
+        const guestsCard = await cardIdFromTransaction(
+            await cardGame.awardUniqueCardTo(guestAddress, "Defender", 70)
+        );
 
-        // Draw case: reward two equal-power cards and use their emitted ids
-        const tx3 = await cardGame.awardUniqueCardTo(a, "Mid", 80);
-        const rc3 = await tx3.wait();
-        const ev3 = rc3.events.find((e) => e.event === 'CardWasAwarded');
-        const id3 = ev3.args.cardId.toNumber();
+        await cardGame.conductMatchBetween(hostsCard, guestsCard);
+        expect((await cardGame.pendingRewardCountFor(hostAddress)).toNumber()).to.equal(1);
 
-        const tx4 = await cardGame.awardUniqueCardTo(b, "Mid", 80);
-        const rc4 = await tx4.wait();
-        const ev4 = rc4.events.find((e) => e.event === 'CardWasAwarded');
-        const id4 = ev4.args.cardId.toNumber();
+        const _ = await claimReward(cardGame, host);
+        expect( await cardCount(cardGame, hostAddress)).to.equal(2);
 
-        const tx = await cardGame.conductMatchBetween(id3, id4);
+        const newHostsCard = await cardIdFromTransaction(
+            await cardGame.awardUniqueCardTo(hostAddress, "Mid", 80)
+        );
+
+        const newGuestsCard = await cardIdFromTransaction(
+            await cardGame.awardUniqueCardTo(guestAddress, "Mid", 80)
+        );
+
+        const tx = await cardGame.conductMatchBetween(newHostsCard, newGuestsCard);
         await tx.wait();
-        // draw should not create pending rewards for player1
-        expect((await cardGame.pendingRewardCountFor(a)).toNumber()).to.equal(0);
+        expect((await cardGame.pendingRewardCountFor(hostAddress)).toNumber()).to.equal(0);
     });
 });
 
