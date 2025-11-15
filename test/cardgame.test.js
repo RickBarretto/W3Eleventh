@@ -1,4 +1,4 @@
-const { expect } = require("chai")
+const { ensure } = require('./helpers/ensure')
 const { ethers } = require("hardhat")
 
 describe("CardGame (basic TDD tests)", () => {
@@ -15,12 +15,12 @@ describe("CardGame (basic TDD tests)", () => {
         const address = host.address
         await game.createNewTeamFor(address)
     
-        expect(await hasTeam(game, address)).to.equal(true)
-        expect(await cardCount(game, address)).to.equal(5)
+        ensure(await hasTeam(game, address))
+        ensure(await cardCount(game, address), 5)
 
         await game.createNewTeamFor(address)
-        expect(await hasTeam(game, address)).to.equal(true)
-        expect(await cardCount(game, address)).to.equal(5)
+        ensure(await hasTeam(game, address))
+        ensure(await cardCount(game, address), 5)
     })
 
     it("rewards unique cards and stores attributes", async () => {
@@ -30,21 +30,21 @@ describe("CardGame (basic TDD tests)", () => {
         )
         const card = await game.cardDetails(firstCardId)
     
-        expect(card[0]).to.equal("Defender")
-        expect(card[1].toNumber()).to.equal(70)
-        expect(card[2]).to.equal(address)
+        ensure(card[0], "Defender")
+        ensure(card[1].toNumber(), 70)
+        ensure(card[2], address)
 
         const secondCardId = await cardIdFromTransaction(
             await game.awardUniqueCardTo(address, "Defender", 70)
         )
         const secondCard = await game.cardDetails(secondCardId)
 
-        expect(secondCard[0]).to.equal("Defender")
-        expect(secondCard[1].toNumber()).to.equal(70)
-        expect(secondCard[2]).to.equal(address)
+        ensure(secondCard[0], "Defender")
+        ensure(secondCard[1].toNumber(), 70)
+        ensure(secondCard[2], address)
 
-        expect(firstCardId).to.not.equal(secondCardId)
-        expect(await cardCount(game, address)).to.equal(2)
+        ensure(() => firstCardId !== secondCardId)
+        ensure(await cardCount(game, address), 2)
     })
 
     it("determines match winners based on power and handles draws", async () => {
@@ -57,10 +57,10 @@ describe("CardGame (basic TDD tests)", () => {
         )
 
         await game.conductMatchBetween(hostsCard, guestsCard)
-        expect(await rewardCount(game, host.address)).to.equal(1)
+        ensure(await rewardCount(game, host.address), 1)
         
         await claimReward(game, host)
-        expect(await cardCount(game, host.address)).to.equal(2)
+        ensure(await cardCount(game, host.address), 2)
 
         const newHostsCard = await cardIdFromTransaction(
             await game.awardUniqueCardTo(host.address, "Mid", 80)
@@ -73,7 +73,7 @@ describe("CardGame (basic TDD tests)", () => {
         const tx = await game.conductMatchBetween(newHostsCard, newGuestsCard)
         await tx.wait()
 
-        expect(await rewardCount(game, host.address)).to.equal(0)
+        ensure(await rewardCount(game, host.address), 0)
     })
 })
 

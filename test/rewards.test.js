@@ -1,4 +1,4 @@
-const { expect } = require("chai")
+const { ensure } = require('./helpers/ensure')
 const { ethers } = require("hardhat")
 
 describe("Rewards (claim tests)", () => {
@@ -21,14 +21,15 @@ describe("Rewards (claim tests)", () => {
         )
         
         await game.conductMatchBetween(hostsCard, guestsCard)
-        expect(await rewardCount(game, host.address)).to.equal(1)
+        ensure(await rewardCount(game, host.address), 1)
 
         const newId = await claimReward(game, host)
-        expect(await cardCount(game, host.address)).to.be.greaterThan(1)
-        expect(await rewardCount(game, host.address)).to.equal(0)
+        const count = await cardCount(game, host.address)
+        ensure(() => count > 1)
+        ensure(await rewardCount(game, host.address), 0)
 
         const cardInfo = await game.cardDetails(newId)
-        expect(cardInfo[2]).to.equal(host.address)
+        ensure(cardInfo[2], host.address)
     })
 })
 

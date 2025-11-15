@@ -1,4 +1,4 @@
-const { expect } = require("chai")
+const { ensure } = require('./helpers/ensure')
 const { ethers } = require("hardhat")
 
 describe("TeamManager (team tests)", () => {
@@ -15,11 +15,11 @@ describe("TeamManager (team tests)", () => {
         const playerAddress = player.address
 
         await game.createNewTeamFor(playerAddress)
-        expect(await game.doesTeamExist(playerAddress)).to.equal(true)
-        expect(await countCards(game, playerAddress)).to.equal(5)
+        ensure(await game.doesTeamExist(playerAddress))
+        ensure(await countCards(game, playerAddress), 5)
 
         await game.createNewTeamFor(playerAddress)
-        expect(await countCards(game, playerAddress)).to.equal(5)
+        ensure(await countCards(game, playerAddress), 5)
     })
 })
 

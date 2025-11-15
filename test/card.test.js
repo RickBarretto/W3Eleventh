@@ -1,4 +1,4 @@
-const { expect } = require("chai")
+const { ensure } = require('./helpers/ensure')
 const { ethers } = require("hardhat")
 
 describe("CardStore (card tests)", () => {
@@ -19,16 +19,16 @@ describe("CardStore (card tests)", () => {
         )
         const cardInfo = await game.cardDetails(cardIdNumber)
 
-        expect(cardInfo[0]).to.equal("Defender")
-        expect(cardInfo[1].toNumber()).to.equal(70)
-        expect(cardInfo[2]).to.equal(address)
+        ensure(cardInfo[0], "Defender")
+        ensure(cardInfo[1].toNumber(), 70)
+        ensure(cardInfo[2], address)
 
         const cardIdNumber2 = await cardIdFromTransaction(
             await game.awardUniqueCardTo(address, "Defender", 70)
         )
 
-        expect(cardIdNumber).to.not.equal(cardIdNumber2)
-        expect(await cardCount(game, address)).to.equal(2)
+        ensure(() => cardIdNumber !== cardIdNumber2)
+        ensure(await cardCount(game, address), 2)
     })
 })
 

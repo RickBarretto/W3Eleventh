@@ -1,4 +1,4 @@
-const { expect } = require("chai")
+const { ensure } = require('./helpers/ensure')
 const { ethers } = require("hardhat")
 
 describe("MatchEngine (match tests)", () => {
@@ -21,8 +21,8 @@ describe("MatchEngine (match tests)", () => {
         )
 
         await game.conductMatchBetween(hostsCard, guestsCard)
-        expect(await rewardCount(game, host.address)).to.equal(1)
-        expect(await rewardCount(game, guest.address)).to.equal(0)
+        ensure(await rewardCount(game, host.address), 1)
+        ensure(await rewardCount(game, guest.address), 0)
     })
 
     it("does not award pending reward on draw", async () => {
@@ -35,8 +35,8 @@ describe("MatchEngine (match tests)", () => {
         )
 
         await game.conductMatchBetween(hostsCard, guestsCard)
-        expect(await rewardCount(game, host.address)).to.equal(0)
-        expect(await rewardCount(game, guest.address)).to.equal(0)
+        ensure(await rewardCount(game, host.address), 0)
+        ensure(await rewardCount(game, guest.address), 0)
     });
 });
 
