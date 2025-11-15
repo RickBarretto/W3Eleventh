@@ -2,31 +2,40 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
 describe("CardStore (card tests)", function () {
-  let CardGame, cardGame, owner, player;
+    let CardGame, cardGame, owner, player;
 
-  beforeEach(async function () {
-    [owner, player] = await ethers.getSigners();
-    CardGame = await ethers.getContractFactory("CardGame");
-    cardGame = await CardGame.deploy();
-    await cardGame.deployed();
-  });
+    beforeEach(async function () {
+        [owner, player] = await ethers.getSigners();
 
-  it("rewards unique cards and stores attributes", async function () {
-    const p = player.address;
-    const tx1 = await cardGame.awardUniqueCardTo(p, "Defender", 70);
-    const rc1 = await tx1.wait();
-    const ev1 = rc1.events.find((e) => e.event === 'CardWasAwarded');
-    const id1 = ev1.args.cardId.toNumber();
-    const card1 = await cardGame.cardDetails(id1);
-    expect(card1[0]).to.equal("Defender");
-    expect(card1[1].toNumber()).to.equal(70);
-    expect(card1[2]).to.equal(p);
+        CardGame = await ethers.getContractFactory("CardGame");
+        cardGame = await CardGame.deploy();
 
-    const tx2 = await cardGame.awardUniqueCardTo(p, "Defender", 70);
-    const rc2 = await tx2.wait();
-    const ev2 = rc2.events.find((e) => e.event === 'CardWasAwarded');
-    const id2 = ev2.args.cardId.toNumber();
-    expect(id1).to.not.equal(id2);
-    expect((await cardGame.numberOfCardsInTeam(p)).toNumber()).to.equal(2);
-  });
+        await cardGame.deployed();
+
+    });
+
+    it("rewards unique cards and stores attributes", async function () {
+        const playerAddress = player.address;
+
+        const claimTransaction = await cardGame.awardUniqueCardTo(playerAddress, "Defender", 70);
+        const transactionReceipt = await claimTransaction.wait();
+
+        const claimedCardEvent = transactionReceipt.events.find((e) => e.event === 'CardWasAwarded');
+        const cardIdNumber = claimedCardEvent.args.cardId.toNumber();
+        const cardInfo = await cardGame.cardDetails(cardIdNumber);
+
+        expect(cardInfo[0]).to.equal("Defender");
+        expect(cardInfo[1].toNumber()).to.equal(70);
+        expect(cardInfo[2]).to.equal(playerAddress);
+
+
+        const claimTransaction2 = await cardGame.awardUniqueCardTo(playerAddress, "Defender", 70);
+        const transactionReceipt2 = await claimTransaction2.wait();
+        const claimedCardEvent2 = transactionReceipt2.events.find((e) => e.event === 'CardWasAwarded');
+        const cardIdNumber2 = claimedCardEvent2.args.cardId.toNumber();
+
+        expect(cardIdNumber).to.not.equal(cardIdNumber2);
+        expect((await cardGame.numberOfCardsInTeam(playerAddress)).toNumber()).to.equal(2);
+
+    });
 });
