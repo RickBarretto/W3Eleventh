@@ -59,9 +59,10 @@ describe("CardGame (basic TDD tests)", () => {
         )
 
         await cardGame.conductMatchBetween(hostsCard, guestsCard)
-        expect((await cardGame.pendingRewardCountFor(host.address)).toNumber()).to.equal(1)
-        const _ = await claimReward(cardGame, host)
-        expect( await cardCount(cardGame, host.address)).to.equal(2)
+        expect(await rewardCount(cardGame, host.address)).to.equal(1)
+        
+        await claimReward(cardGame, host)
+        expect(await cardCount(cardGame, host.address)).to.equal(2)
 
         const newHostsCard = await cardIdFromTransaction(
             await cardGame.awardUniqueCardTo(host.address, "Mid", 80)
