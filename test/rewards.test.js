@@ -2,38 +2,35 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
 describe("Rewards (claim tests)", function () {
-    let CardGame, cardGame, player1, player2;
+    let Game, game, host, guest;
 
     beforeEach(async function () {
-        [, player1, player2] = await ethers.getSigners();
+        [, host, guest] = await ethers.getSigners();
 
-        CardGame = await ethers.getContractFactory("CardGame");
-        cardGame = await CardGame.deploy();
+        Game = await ethers.getContractFactory("CardGame");
+        game = await Game.deploy();
 
-        await cardGame.deployed();
+        await game.deployed();
     });
 
     it("allows winner to claim reward and mints a card", async function () {
-        const host = player1.address;
-        const guest = player2.address;
-
         const hostsCard = await cardIdFromTransaction(
-            await cardGame.awardUniqueCardTo(host, "Striker", 90)
+            await game.awardUniqueCardTo(host.address, "Striker", 90)
         );
         
         const guestsCard = await cardIdFromTransaction(
-            await cardGame.awardUniqueCardTo(guest, "Defender", 70)
+            await game.awardUniqueCardTo(guest.address, "Defender", 70)
         );
         
-        await cardGame.conductMatchBetween(hostsCard, guestsCard);
-        expect(await rewardCount(cardGame, host)).to.equal(1);
+        await game.conductMatchBetween(hostsCard, guestsCard);
+        expect(await rewardCount(game, host.address)).to.equal(1);
 
-        const newId = await claimReward(cardGame, player1);
-        expect(await cardCount(cardGame, host)).to.be.greaterThan(1);
-        expect(await rewardCount(cardGame, host)).to.equal(0);
+        const newId = await claimReward(game, host);
+        expect(await cardCount(game, host.address)).to.be.greaterThan(1);
+        expect(await rewardCount(game, host.address)).to.equal(0);
 
-        const cardInfo = await cardGame.cardDetails(newId);
-        expect(cardInfo[2]).to.equal(host);
+        const cardInfo = await game.cardDetails(newId);
+        expect(cardInfo[2]).to.equal(host.address);
     });
 });
 
