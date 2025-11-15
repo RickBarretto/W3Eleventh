@@ -34,9 +34,9 @@ describe("MatchEngine (match tests)", () => {
             await game.awardUniqueCardTo(guest.address, "Mid", 80)
         )
 
-        await game.conductMatchBetween(hostsCard, guestsCard);
-        expect(await rewardCount(game, host)).to.equal(0);
-        expect(await rewardCount(game, guest)).to.equal(0);
+        await game.conductMatchBetween(hostsCard, guestsCard)
+        expect(await rewardCount(game, host)).to.equal(0)
+        expect(await rewardCount(game, guest)).to.equal(0)
     });
 });
 
@@ -46,9 +46,9 @@ const cardIdFromTransaction = async (tx1) => {
         .find((e) => e.event === 'CardWasAwarded')
         .args
         .cardId
-        .toNumber();
+        .toNumber()
 }
 
 const rewardCount = async (cardGame, a) => {
-    return (await cardGame.pendingRewardCountFor(a)).toNumber();
+    return (await cardGame.pendingRewardCountFor(a)).toNumber()
 }
