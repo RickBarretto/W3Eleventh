@@ -6,19 +6,26 @@ describe("TeamManager (team tests)", function () {
 
     beforeEach(async function () {
         [, player] = await ethers.getSigners();
+
         CardGame = await ethers.getContractFactory("CardGame");
         cardGame = await CardGame.deploy();
+
         await cardGame.deployed();
     });
 
     it("creates a team and grants 5 starter cards", async function () {
-        const p = player.address;
-        await cardGame.createNewTeamFor(p);
-        expect(await cardGame.doesTeamExist(p)).to.equal(true);
-        expect((await cardGame.numberOfCardsInTeam(p)).toNumber()).to.equal(5);
+        const playerAddress = player.address;
 
-        // idempotent
-        await cardGame.createNewTeamFor(p);
-        expect((await cardGame.numberOfCardsInTeam(p)).toNumber()).to.equal(5);
+        await cardGame.createNewTeamFor(playerAddress);
+        expect(await cardGame.doesTeamExist(playerAddress)).to.equal(true);
+        expect(await countCards(cardGame, playerAddress)).to.equal(5);
+
+        await cardGame.createNewTeamFor(playerAddress);
+        expect(await countCards(cardGame, playerAddress)).to.equal(5);
     });
 });
+
+async function countCards(cardGame, playerAddress) {
+    return (await cardGame.numberOfCardsInTeam(playerAddress)).toNumber();
+}
+
