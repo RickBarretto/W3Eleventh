@@ -1,10 +1,10 @@
 const { expect } = require("chai")
 const { ethers } = require("hardhat")
 
-describe("CardGame (basic TDD tests)", function () {
+describe("CardGame (basic TDD tests)", () => {
     let CardGame, cardGame, owner, host, guest
 
-    beforeEach(async function () {
+    beforeEach(async () => {
         [owner, host, guest] = await ethers.getSigners()
 
         CardGame = await ethers.getContractFactory("CardGame")
@@ -13,7 +13,7 @@ describe("CardGame (basic TDD tests)", function () {
         await cardGame.deployed()
     })
 
-    it("creates a new team and is idempotent", async function () {
+    it("creates a new team and is idempotent", async () => {
         const hostAddress = host.address
         await cardGame.createNewTeamFor(hostAddress)
     
@@ -25,7 +25,7 @@ describe("CardGame (basic TDD tests)", function () {
         expect(await cardCount(cardGame, hostAddress)).to.equal(5)
     })
 
-    it("rewards unique cards and stores attributes", async function () {
+    it("rewards unique cards and stores attributes", async () => {
         const guestAddress = guest.address
         const guestsCardId = await cardIdFromTransaction(
             await cardGame.awardUniqueCardTo(guestAddress, "Defender", 70)
@@ -49,7 +49,7 @@ describe("CardGame (basic TDD tests)", function () {
         expect(await cardCount(cardGame, guestAddress)).to.equal(2)
     })
 
-    it("determines match winners based on power and handles draws", async function () {
+    it("determines match winners based on power and handles draws", async () => {
         const hostAddress = host.address
         const guestAddress = guest.address
 
@@ -81,11 +81,11 @@ describe("CardGame (basic TDD tests)", function () {
     })
 })
 
-async function hasTeam(cardGame, hostAddress) {
+const hasTeam = async (cardGame, hostAddress) => {
     return await cardGame.doesTeamExist(hostAddress)
 }
 
-async function cardIdFromTransaction(tx1) {
+const cardIdFromTransaction = async (tx1) => {
     return (await tx1.wait())
         .events
         .find((e) => e.event === 'CardWasAwarded')
@@ -94,7 +94,7 @@ async function cardIdFromTransaction(tx1) {
         .toNumber()
 }
 
-async function claimReward(cardGame, player1) {
+const claimReward = async (cardGame, player1) => {
     const claimTx = await cardGame.connect(player1).claimPendingReward()
     const rc = await claimTx.wait()
     const ev = rc.events.find((e) => e.event === 'RewardWasClaimed')
@@ -102,10 +102,10 @@ async function claimReward(cardGame, player1) {
     return newId
 }
 
-async function rewardCount(cardGame, a) {
+const rewardCount = async (cardGame, a) => {
     return (await cardGame.pendingRewardCountFor(a)).toNumber()
 }
 
-async function cardCount(cardGame, a) {
+const cardCount = async (cardGame, a) => {
     return (await cardGame.numberOfCardsInTeam(a)).toNumber()
 }
