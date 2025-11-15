@@ -14,70 +14,67 @@ describe("CardGame (basic TDD tests)", () => {
     })
 
     it("creates a new team and is idempotent", async () => {
-        const hostAddress = host.address
-        await cardGame.createNewTeamFor(hostAddress)
+        const address = host.address
+        await cardGame.createNewTeamFor(address)
     
-        expect(await hasTeam(cardGame, hostAddress)).to.equal(true)
-        expect(await cardCount(cardGame, hostAddress)).to.equal(5)
+        expect(await hasTeam(cardGame, address)).to.equal(true)
+        expect(await cardCount(cardGame, address)).to.equal(5)
 
-        await cardGame.createNewTeamFor(hostAddress)
-        expect(await hasTeam(cardGame, hostAddress)).to.equal(true)
-        expect(await cardCount(cardGame, hostAddress)).to.equal(5)
+        await cardGame.createNewTeamFor(address)
+        expect(await hasTeam(cardGame, address)).to.equal(true)
+        expect(await cardCount(cardGame, address)).to.equal(5)
     })
 
     it("rewards unique cards and stores attributes", async () => {
-        const guestAddress = guest.address
-        const guestsCardId = await cardIdFromTransaction(
-            await cardGame.awardUniqueCardTo(guestAddress, "Defender", 70)
+        const address = guest.address
+        const firstCardId = await cardIdFromTransaction(
+            await cardGame.awardUniqueCardTo(address, "Defender", 70)
         )
-        const guestCard = await cardGame.cardDetails(guestsCardId)
+        const card = await cardGame.cardDetails(firstCardId)
     
-        expect(guestCard[0]).to.equal("Defender")
-        expect(guestCard[1].toNumber()).to.equal(70)
-        expect(guestCard[2]).to.equal(guestAddress)
+        expect(card[0]).to.equal("Defender")
+        expect(card[1].toNumber()).to.equal(70)
+        expect(card[2]).to.equal(address)
 
-        const guestsCardId2 = await cardIdFromTransaction(
-            await cardGame.awardUniqueCardTo(guestAddress, "Defender", 70)
+        const secondCardId = await cardIdFromTransaction(
+            await cardGame.awardUniqueCardTo(address, "Defender", 70)
         )
-        const guestCard2 = await cardGame.cardDetails(guestsCardId2)
+        const secondCard = await cardGame.cardDetails(secondCardId)
 
-        expect(guestCard2[0]).to.equal("Defender")
-        expect(guestCard2[1].toNumber()).to.equal(70)
-        expect(guestCard2[2]).to.equal(guestAddress)
+        expect(secondCard[0]).to.equal("Defender")
+        expect(secondCard[1].toNumber()).to.equal(70)
+        expect(secondCard[2]).to.equal(address)
 
-        expect(guestsCardId).to.not.equal(guestsCardId2)
-        expect(await cardCount(cardGame, guestAddress)).to.equal(2)
+        expect(firstCardId).to.not.equal(secondCardId)
+        expect(await cardCount(cardGame, address)).to.equal(2)
     })
 
     it("determines match winners based on power and handles draws", async () => {
-        const hostAddress = host.address
-        const guestAddress = guest.address
-
         const hostsCard = await cardIdFromTransaction(
-            await cardGame.awardUniqueCardTo(hostAddress, "Striker", 90)
+            await cardGame.awardUniqueCardTo(host.address, "Striker", 90)
         )
 
         const guestsCard = await cardIdFromTransaction(
-            await cardGame.awardUniqueCardTo(guestAddress, "Defender", 70)
+            await cardGame.awardUniqueCardTo(guest.address, "Defender", 70)
         )
 
         await cardGame.conductMatchBetween(hostsCard, guestsCard)
-        expect((await cardGame.pendingRewardCountFor(hostAddress)).toNumber()).to.equal(1)
-
+        expect((await cardGame.pendingRewardCountFor(host.address)).toNumber()).to.equal(1)
         const _ = await claimReward(cardGame, host)
-        expect( await cardCount(cardGame, hostAddress)).to.equal(2)
+        expect( await cardCount(cardGame, host.address)).to.equal(2)
 
         const newHostsCard = await cardIdFromTransaction(
-            await cardGame.awardUniqueCardTo(hostAddress, "Mid", 80)
+            await cardGame.awardUniqueCardTo(host.address, "Mid", 80)
         )
 
         const newGuestsCard = await cardIdFromTransaction(
-            await cardGame.awardUniqueCardTo(guestAddress, "Mid", 80)
+            await cardGame.awardUniqueCardTo(guest.address, "Mid", 80)
         )
 
         const tx = await cardGame.conductMatchBetween(newHostsCard, newGuestsCard)
         await tx.wait()
-        expect((await cardGame.pendingRewardCountFor(hostAddress)).toNumber()).to.equal(0)
+
+        expect(await rewardCount(cardGame, host.address)).to.equal(0)
     })
 })
 
