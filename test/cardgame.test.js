@@ -2,53 +2,56 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
 describe("CardGame (basic TDD tests)", function () {
-    let CardGame, cardGame, owner, player1, player2;
+    let CardGame, cardGame, owner, host, guest;
 
     beforeEach(async function () {
-        [owner, player1, player2] = await ethers.getSigners();
+        [owner, host, guest] = await ethers.getSigners();
+
         CardGame = await ethers.getContractFactory("CardGame");
         cardGame = await CardGame.deploy();
+
         await cardGame.deployed();
     });
 
     it("creates a new team and is idempotent", async function () {
-        const p1 = player1.address;
-        await cardGame.createNewTeamFor(p1);
-        expect(await cardGame.doesTeamExist(p1)).to.equal(true);
-        // creating a team now grants 5 starter cards
-        expect((await cardGame.numberOfCardsInTeam(p1)).toNumber()).to.equal(5);
+        const hostAddress = host.address;
+        await cardGame.createNewTeamFor(hostAddress);
+    
+        expect(await hasTeam(cardGame, hostAddress)).to.equal(true);
+        expect(await cardCount(cardGame, hostAddress)).to.equal(5);
 
-        // Create again should still be fine
-        await cardGame.createNewTeamFor(p1);
-        expect(await cardGame.doesTeamExist(p1)).to.equal(true);
-        expect((await cardGame.numberOfCardsInTeam(p1)).toNumber()).to.equal(5);
+        await cardGame.createNewTeamFor(hostAddress);
+        expect(await hasTeam(cardGame, hostAddress)).to.equal(true);
+        expect(await cardCount(cardGame, hostAddress)).to.equal(5);
     });
 
     it("rewards unique cards and stores attributes", async function () {
-        const p2 = player2.address;
-        const tx1 = await cardGame.awardUniqueCardTo(p2, "Defender", 70);
-        const rc1 = await tx1.wait();
-        const id1 = 1;
-        const card1 = await cardGame.cardDetails(id1);
-        expect(card1[0]).to.equal("Defender");
-        expect(card1[1].toNumber()).to.equal(70);
-        expect(card1[2]).to.equal(p2);
+        const guestAddress = guest.address;
+        const guestsCardId = await cardIdFromTransaction(
+            await cardGame.awardUniqueCardTo(guestAddress, "Defender", 70)
+        );
+        const guestCard = await cardGame.cardDetails(guestsCardId);
+    
+        expect(guestCard[0]).to.equal("Defender");
+        expect(guestCard[1].toNumber()).to.equal(70);
+        expect(guestCard[2]).to.equal(guestAddress);
 
-        // Reward another card with same name — should be distinct id
-        const tx2 = await cardGame.awardUniqueCardTo(p2, "Defender", 70);
-        const id2 = 2;
-        const card2 = await cardGame.cardDetails(id2);
-        expect(card2[0]).to.equal("Defender");
-        expect(card2[1].toNumber()).to.equal(70);
-        expect(card2[2]).to.equal(p2);
+        const guestsCardId2 = await cardIdFromTransaction(
+            await cardGame.awardUniqueCardTo(guestAddress, "Defender", 70)
+        );
+        const guestCard2 = await cardGame.cardDetails(guestsCardId2);
 
-        expect(id1).to.not.equal(id2);
-        expect((await cardGame.numberOfCardsInTeam(p2)).toNumber()).to.equal(2);
+        expect(guestCard2[0]).to.equal("Defender");
+        expect(guestCard2[1].toNumber()).to.equal(70);
+        expect(guestCard2[2]).to.equal(guestAddress);
+
+        expect(guestsCardId).to.not.equal(guestsCardId2);
+        expect(await cardCount(cardGame, guestAddress)).to.equal(2);
     });
 
     it("determines match winners based on power and handles draws", async function () {
-        const a = player1.address;
-        const b = player2.address;
+        const a = host.address;
+        const b = guest.address;
         // Reward two cards: id 1 -> power 90 to p1, id 2 -> power 70 to p2
         const txA = await cardGame.awardUniqueCardTo(a, "Striker", 90);
         const idA = (await txA.wait()).events.find((e) => e.event === 'CardWasAwarded').args.cardId.toNumber();
@@ -61,7 +64,7 @@ describe("CardGame (basic TDD tests)", function () {
         expect((await cardGame.pendingRewardCountFor(a)).toNumber()).to.equal(1);
 
         // claim the reward as player1 and capture the claimed card id
-        const claimTx = await cardGame.connect(player1).claimPendingReward();
+        const claimTx = await cardGame.connect(host).claimPendingReward();
         const claimRc = await claimTx.wait();
         const rewardEvent = claimRc.events.find((e) => e.event === 'RewardWasClaimed');
         const claimedId = rewardEvent.args.cardId.toNumber();
@@ -85,3 +88,32 @@ describe("CardGame (basic TDD tests)", function () {
         expect((await cardGame.pendingRewardCountFor(a)).toNumber()).to.equal(0);
     });
 });
+
+async function hasTeam(cardGame, hostAddress) {
+    return await cardGame.doesTeamExist(hostAddress);
+}
+
+async function cardIdFromTransaction(tx1) {
+    return (await tx1.wait())
+        .events
+        .find((e) => e.event === 'CardWasAwarded')
+        .args
+        .cardId
+        .toNumber();
+}
+
+async function claimReward(cardGame, player1) {
+    const claimTx = await cardGame.connect(player1).claimPendingReward();
+    const rc = await claimTx.wait();
+    const ev = rc.events.find((e) => e.event === 'RewardWasClaimed');
+    const newId = ev.args.cardId.toNumber();
+    return newId;
+}
+
+async function rewardCount(cardGame, a) {
+    return (await cardGame.pendingRewardCountFor(a)).toNumber();
+}
+
+async function cardCount(cardGame, a) {
+    return (await cardGame.numberOfCardsInTeam(a)).toNumber();
+}
