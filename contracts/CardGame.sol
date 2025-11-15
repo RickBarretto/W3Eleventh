@@ -9,10 +9,8 @@ contract CardGame {
         address owner;
     }
 
-    // helper storages
-
-    uint256 public nextCardId;
-    mapping(address => bool) private hasTeam;
+    uint256 public lastCardID;
+    mapping(address => bool) private teamExists;
 
     mapping(uint256 => Card) public cards;
     mapping(address => uint256[]) private teams;
@@ -25,8 +23,8 @@ contract CardGame {
 
     // Create a new team for `player`. If it's a new team, grant 5 starter cards.
     function createNewTeamFor(address player) external {
-        if (!hasTeam[player]) {
-            hasTeam[player] = true;
+        if (!teamExists[player]) {
+            teamExists[player] = true;
             emit TeamWasCreated(player);
 
             // grant 5 starter cards with readable names
@@ -39,7 +37,7 @@ contract CardGame {
 
     // Returns true when the player already has a team
     function doesTeamExist(address player) external view returns (bool) {
-        return hasTeam[player];
+        return teamExists[player];
     }
 
     // Returns the number of cards currently in the player's team
@@ -54,12 +52,14 @@ contract CardGame {
     }
 
     function _awardCard(address to, string memory name, uint256 power) internal returns (uint256) {
-        nextCardId += 1;
-        uint256 id = nextCardId;
+        lastCardID += 1;
+        uint256 id = lastCardID;
+
         cards[id] = Card({name: name, power: power, owner: to});
         teams[to].push(id);
-        hasTeam[to] = true; // ensure team exists when rewarded
+        teamExists[to] = true;
         emit CardWasAwarded(id, to, name, power);
+
         return id;
     }
 
@@ -79,21 +79,24 @@ contract CardGame {
     // Conduct a match between two card ids. Records a pending reward for the winner's owner.
     function conductMatchBetween(uint256 a, uint256 b) external returns (uint256 winnerId, uint256 aPower, uint256 bPower) {
         require(a != 0 && b != 0, "invalid card id");
+
         aPower = cards[a].power;
         bPower = cards[b].power;
+
         if (aPower > bPower) {
             winnerId = a;
-            address winnerOwner = cards[a].owner;
-            pendingRewards[winnerOwner] += 1;
-            emit RewardNowAvailable(winnerOwner, pendingRewards[winnerOwner]);
+            address winner = cards[a].owner;
+            pendingRewards[winner] += 1;
+            emit RewardNowAvailable(winner, pendingRewards[winner]);
         } else if (bPower > aPower) {
             winnerId = b;
-            address winnerOwner = cards[b].owner;
-            pendingRewards[winnerOwner] += 1;
-            emit RewardNowAvailable(winnerOwner, pendingRewards[winnerOwner]);
+            address winner = cards[b].owner;
+            pendingRewards[winner] += 1;
+            emit RewardNowAvailable(winner, pendingRewards[winner]);
         } else {
             winnerId = 0;
         }
+    
     }
 
     // Claim a single pending reward and receive a new card.
@@ -101,11 +104,18 @@ contract CardGame {
     function claimPendingReward() external returns (uint256) {
         uint256 pending = pendingRewards[msg.sender];
         require(pending > 0, "no pending rewards");
+
         pendingRewards[msg.sender] = pending - 1;
+
         // mint a reward card with readable name
-        uint256 id = _awardCard(msg.sender, string(abi.encodePacked("Reward #", _uintToString(rewardIndexFor(msg.sender)))), 60);
+        uint256 id = _awardCard(
+            msg.sender, 
+            string(abi.encodePacked("Reward #", _uintToString(rewardIndexFor(msg.sender)))), 
+            60
+        );
         emit RewardWasClaimed(msg.sender, id);
         return id;
+
     }
 
     // helper to compute a small index for reward naming (team size + 1)
@@ -116,21 +126,24 @@ contract CardGame {
 
     // simple uint -> string helper
     function _uintToString(uint256 value) internal pure returns (string memory) {
-        if (value == 0) {
-            return "0";
-        }
+        if (value == 0) { return "0"; }
+
         uint256 temp = value;
         uint256 digits;
+
         while (temp != 0) {
             digits++;
             temp /= 10;
         }
+
         bytes memory buffer = new bytes(digits);
+
         while (value != 0) {
             digits -= 1;
             buffer[digits] = bytes1(uint8(48 + uint256(value % 10)));
             value /= 10;
         }
+
         return string(buffer);
     }
 }
