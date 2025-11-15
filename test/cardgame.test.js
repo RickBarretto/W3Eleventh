@@ -6,10 +6,8 @@ describe("CardGame (basic TDD tests)", () => {
 
     beforeEach(async () => {
         [owner, host, guest] = await ethers.getSigners()
-
         Game = await ethers.getContractFactory("CardGame")
         game = await Game.deploy()
-
         await game.deployed()
     })
 

@@ -6,10 +6,8 @@ describe("Rewards (claim tests)", () => {
 
     beforeEach(async () => {
         [, host, guest] = await ethers.getSigners()
-
         Game = await ethers.getContractFactory("CardGame")
         game = await Game.deploy()
-
         await game.deployed()
     })
 

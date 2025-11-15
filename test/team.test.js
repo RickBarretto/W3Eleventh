@@ -6,10 +6,8 @@ describe("TeamManager (team tests)", () => {
 
     beforeEach(async () => {
         [, player] = await ethers.getSigners()
-
         Game = await ethers.getContractFactory("CardGame")
         game = await Game.deploy()
-
         await game.deployed()
     })
 
