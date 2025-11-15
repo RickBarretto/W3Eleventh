@@ -35,8 +35,8 @@ describe("MatchEngine (match tests)", () => {
         )
 
         await game.conductMatchBetween(hostsCard, guestsCard)
-        expect(await rewardCount(game, host)).to.equal(0)
-        expect(await rewardCount(game, guest)).to.equal(0)
+        expect(await rewardCount(game, host.address)).to.equal(0)
+        expect(await rewardCount(game, guest.address)).to.equal(0)
     });
 });
 
