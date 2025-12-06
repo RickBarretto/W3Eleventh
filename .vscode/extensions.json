@@ -1,6 +1,8 @@
 {
     "recommendations": [
         "eamodio.gitlens",
-        "ms-vscode-remote.remote-containers"
+        "ms-vscode-remote.remote-containers",
+        "nomicfoundation.hardhat-solidity",
+        "ms-vscode.vscode-typescript-next"
     ]
 }
