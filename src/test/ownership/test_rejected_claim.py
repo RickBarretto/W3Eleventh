@@ -4,7 +4,7 @@ from pytest_bdd import *
 
 
 @pytest.fixture
-def ownership_ctx():
+def context():
     return {}
 
 
@@ -26,24 +26,24 @@ def test_rejected_claim():
 
 
 @given("a player without claiming rights")
-def player_no_claim(players, ownership_ctx, packages):
+def player_no_claim(players, context, packages):
     player = players["carol"]
-    ownership_ctx["player"] = player
+    context["player"] = player
     assert not packages.claim_rights(player)
 
 
 @when("the player tries to claim a card pack")
-def attempt_claim_without_rights(packages, ownership_ctx):
-    player = ownership_ctx["player"]
+def attempt_claim_without_rights(packages, context):
+    player = context["player"]
     with boa.env.prank(player):
         with boa.reverts("no claim rights"):
             packages.claim_pack()
-    ownership_ctx["claim_failed"] = True
+    context["claim_failed"] = True
 
 
 @then("the blockchain rejects the request")
-def blockchain_rejects(ownership_ctx):
-    assert ownership_ctx.get("claim_failed"), "Expected request rejection flag not set"
+def blockchain_rejects(context):
+    assert context.get("claim_failed"), "Expected request rejection flag not set"
 
 
 @then("an error message is returned indicating the player cannot claim a card pack")

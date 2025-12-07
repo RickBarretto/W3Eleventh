@@ -4,7 +4,7 @@ from pytest_bdd import *
 
 
 @pytest.fixture
-def ownership_ctx():
+def context():
     return {}
 
 
@@ -24,25 +24,25 @@ def test_owned_card_query():
     pass
 
 @given("a player owns a card")
-def player_owns_card(players, admin, packages, ownership_ctx):
+def player_owns_card(players, admin, packages, context):
     player = players["dave"]
-    ownership_ctx["player"] = player
-    ownership_ctx["admin"] = admin
+    context["player"] = player
+    context["admin"] = admin
     with boa.env.prank(admin):
         packages.grant_claim(player)
     with boa.env.prank(player):
         packages.claim_pack()
-    ownership_ctx["cards"] = list(packages.cards_of(player))
+    context["cards"] = list(packages.cards_of(player))
 
 
 @when("querying all cards owned by the player")
-def query_owned_cards(packages, ownership_ctx):
-    player = ownership_ctx["player"]
-    ownership_ctx["owned_cards_response"] = list(packages.cards_of(player))
+def query_owned_cards(packages, context):
+    player = context["player"]
+    context["owned_cards_response"] = list(packages.cards_of(player))
 
 
 @then("the response includes all cards he owns")
-def response_includes_all_cards(ownership_ctx):
-    expected = set(ownership_ctx["cards"])
-    returned = set(ownership_ctx["owned_cards_response"])
+def response_includes_all_cards(context):
+    expected = set(context["cards"])
+    returned = set(context["owned_cards_response"])
     assert expected == returned

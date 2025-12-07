@@ -4,7 +4,7 @@ from pytest_bdd import *
 
 
 @pytest.fixture
-def ownership_ctx():
+def context():
     return {}
 
 
@@ -25,19 +25,19 @@ def test_claim_at_startup():
 
 
 @given("a player without any cards")
-def player_without_cards(packages, players, ownership_ctx):
+def player_without_cards(packages, players, context):
     player = players["alice"]
-    ownership_ctx["player"] = player
+    context["player"] = player
     assert len(packages.cards_of(player)) == 0
 
 
 @when("the player registers on the platform")
-def register_player(packages, ownership_ctx):
-    player = ownership_ctx["player"]
+def register_player(packages, context):
+    player = context["player"]
     with boa.env.prank(player):
         packages.register_player()
 
 
 @then("the player is granted rights to claim a beginner card pack")
-def beginner_claim_rights(packages, ownership_ctx):
-    assert packages.claim_rights(ownership_ctx["player"])
+def beginner_claim_rights(packages, context):
+    assert packages.claim_rights(context["player"])

@@ -4,7 +4,7 @@ from pytest_bdd import *
 
 
 @pytest.fixture
-def ownership_ctx():
+def context():
     return {}
 
 
@@ -25,19 +25,19 @@ def test_claim_for_winners():
 
 
 @given("a player that has won a match")
-def player_with_win_history(players, ownership_ctx):
-    ownership_ctx["player"] = players["bob"]
+def player_with_win_history(players, context):
+    context["player"] = players["bob"]
 
 
 @when("the player reaches a win milestone of 5 sequential wins")
-def reach_win_milestone(packages, admin, ownership_ctx):
-    player = ownership_ctx["player"]
+def reach_win_milestone(packages, admin, context):
+    player = context["player"]
     for _ in range(5):
         with boa.env.prank(admin):
             packages.record_win(player)
 
 
 @then("the player is granted rights to claim a special card pack")
-def special_claim_granted(packages, ownership_ctx):
-    assert packages.claim_rights(ownership_ctx["player"])
+def special_claim_granted(packages, context):
+    assert packages.claim_rights(context["player"])
 

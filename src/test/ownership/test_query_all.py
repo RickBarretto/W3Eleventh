@@ -4,19 +4,19 @@ from pytest_bdd import *
 
 
 @pytest.fixture
-def ownership_ctx():
+def context():
     return {}
 
 
-def claim_card_pack(packages, ownership_ctx):
-    player = ownership_ctx["player"]
-    admin = ownership_ctx["admin"]
+def claim_card_pack(packages, context):
+    player = context["player"]
+    admin = context["admin"]
     with boa.env.prank(admin):
         packages.grant_claim(player)
     with boa.env.prank(player):
         pack_id = packages.claim_pack()
-    ownership_ctx["pack_id"] = pack_id
-    ownership_ctx["cards"] = list(packages.cards_of(player))
+    context["pack_id"] = pack_id
+    context["cards"] = list(packages.cards_of(player))
 
 
 @given("the blockchain is operational")
@@ -34,22 +34,22 @@ def test_claiming_a_card():
     pass
 
 @given("a player")
-def any_player(players, admin, ownership_ctx):
-    ownership_ctx.setdefault("player", players["alice"])
-    ownership_ctx.setdefault("admin", admin)
+def any_player(players, admin, context):
+    context.setdefault("player", players["alice"])
+    context.setdefault("admin", admin)
 
 
 @when("querying the blockchain for the card ownership")
-def query_card_owner(packages, ownership_ctx):
+def query_card_owner(packages, context):
     # Ensure the player has a card to query.
-    if "cards" not in ownership_ctx:
-        claim_card_pack(packages, ownership_ctx)
-    card_id = ownership_ctx["cards"][0]
-    ownership_ctx["queried_card"] = card_id
-    ownership_ctx["queried_owner"] = packages.card_owner(card_id)
+    if "cards" not in context:
+        claim_card_pack(packages, context)
+    card_id = context["cards"][0]
+    context["queried_card"] = card_id
+    context["queried_owner"] = packages.card_owner(card_id)
 
 
 @then("the response shows the owner of that card")
-def response_shows_owner(ownership_ctx):
-    assert ownership_ctx["queried_owner"] == ownership_ctx["player"]
+def response_shows_owner(context):
+    assert context["queried_owner"] == context["player"]
 
