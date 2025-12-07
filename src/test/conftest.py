@@ -7,34 +7,41 @@ ROOT_DIR = Path(__file__).resolve().parents[2]
 CONTRACTS_DIR = ROOT_DIR / "src" / "smart"
 
 
+new_address = boa.env.generate_address
+
+
 @pytest.fixture(autouse=True)
 def boa_env():
-    # Anchor the environment so state changes are reverted after each test.
+    """Reset the environment after each test."""
     with boa.env.anchor():
         yield
 
 
 @pytest.fixture
 def admin():
-    return boa.env.generate_address("admin")
+    """Admin's address"""
+    return new_address("admin")
 
 
 @pytest.fixture
 def players():
+    """Group of player addresses"""
     return {
-        "alice": boa.env.generate_address("alice"),
-        "bob": boa.env.generate_address("bob"),
-        "carol": boa.env.generate_address("carol"),
-        "dave": boa.env.generate_address("dave"),
+        "alice": new_address("alice"),
+        "bob": new_address("bob"),
+        "carol": new_address("carol"),
+        "dave": new_address("dave"),
     }
 
 
 @pytest.fixture
 def matches_contract():
+    """Match contract instance"""
     return boa.load(str(CONTRACTS_DIR / "Matches.vy"))
 
 
 @pytest.fixture
 def packages_contract(admin):
+    """Packages contract instance"""
     with boa.env.prank(admin):
         return boa.load(str(CONTRACTS_DIR / "Packages.vy"), admin)
