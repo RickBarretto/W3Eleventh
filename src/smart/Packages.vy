@@ -2,9 +2,9 @@
 Card ownership, claiming rights, and trading.
 """
 
-MAX_CARDS_PER_PACK: constant(uint256) = 5
-MAX_OWNED_CARDS: constant(uint256) = 2048
-MAX_TRADES: constant(uint256) = 1024
+PACK_CAPACITY: constant(uint256) = 5
+INVENTORY_CAPACITY: constant(uint256) = 2048
+TRADES_CAPACITY: constant(uint256) = 1024
 WIN_MILESTONE: constant(uint256) = 5
 
 struct Trade:
@@ -18,11 +18,11 @@ next_card_id: public(uint256)
 next_pack_id: public(uint256)
 claim_rights: public(HashMap[address, bool])
 card_owner: public(HashMap[uint256, address])
-player_cards: HashMap[address, DynArray[uint256, MAX_OWNED_CARDS]]
-pack_cards: HashMap[uint256, DynArray[uint256, MAX_CARDS_PER_PACK]]
+player_cards: HashMap[address, DynArray[uint256, INVENTORY_CAPACITY]]
+pack_cards: HashMap[uint256, DynArray[uint256, PACK_CAPACITY]]
 pack_owner: public(HashMap[uint256, address])
 pack_opened: public(HashMap[uint256, bool])
-trade_history: DynArray[Trade, MAX_TRADES]
+trade_history: DynArray[Trade, TRADES_CAPACITY]
 wins_in_row: public(HashMap[address, uint256])
 registered: public(HashMap[address, bool])
 
@@ -60,7 +60,7 @@ def register_player():
 
 @view
 @external
-def cards_of(player: address) -> DynArray[uint256, MAX_OWNED_CARDS]:
+def cards_of(player: address) -> DynArray[uint256, INVENTORY_CAPACITY]:
 	return self.player_cards[player]
 
 
@@ -111,7 +111,7 @@ def claim_pack() -> uint256:
 	self.next_pack_id += 1
 
 	# Mint cards and assign ownership
-	for i: uint256 in range(MAX_CARDS_PER_PACK):
+	for i: uint256 in range(PACK_CAPACITY):
 		card_id: uint256 = self.next_card_id
 		self.next_card_id += 1
 
@@ -149,7 +149,7 @@ def trade(to_addr: address, offered_card: uint256, requested_card: uint256):
 		offered_card=offered_card,
 		requested_card=requested_card,
 	)
-	assert len(self.trade_history) < MAX_TRADES, "too many trades"
+	assert len(self.trade_history) < TRADES_CAPACITY, "too many trades"
 	self.trade_history.append(trade_entry)
 
 	log TradeExecuted(
@@ -162,14 +162,14 @@ def trade(to_addr: address, offered_card: uint256, requested_card: uint256):
 
 @internal
 def _add_card(player: address, card_id: uint256):
-	assert len(self.player_cards[player]) < MAX_OWNED_CARDS, "too many cards"
+	assert len(self.player_cards[player]) < INVENTORY_CAPACITY, "too many cards"
 	self.player_cards[player].append(card_id)
 
 
 @internal
 def _remove_card(player: address, card_id: uint256):
 	length: uint256 = len(self.player_cards[player])
-	for i: uint256 in range(MAX_OWNED_CARDS):
+	for i: uint256 in range(INVENTORY_CAPACITY):
 		if i >= length:
 			break
 		if self.player_cards[player][i] == card_id:
