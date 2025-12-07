@@ -46,7 +46,7 @@ def matches_contract():
 
 
 @pytest.fixture
-def packages_contract(admin):
+def packages(admin):
     """Packages contract instance"""
     with boa.env.prank(admin):
         return Packages(admin)

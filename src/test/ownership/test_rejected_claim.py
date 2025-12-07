@@ -26,18 +26,18 @@ def test_rejected_claim():
 
 
 @given("a player without claiming rights")
-def player_no_claim(players, ownership_ctx, packages_contract):
+def player_no_claim(players, ownership_ctx, packages):
     player = players["carol"]
     ownership_ctx["player"] = player
-    assert not packages_contract.claim_rights(player)
+    assert not packages.claim_rights(player)
 
 
 @when("the player tries to claim a card pack")
-def attempt_claim_without_rights(packages_contract, ownership_ctx):
+def attempt_claim_without_rights(packages, ownership_ctx):
     player = ownership_ctx["player"]
     with boa.env.prank(player):
         with boa.reverts("no claim rights"):
-            packages_contract.claim_pack()
+            packages.claim_pack()
     ownership_ctx["claim_failed"] = True
 
 

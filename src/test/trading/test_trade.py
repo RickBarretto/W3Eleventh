@@ -23,28 +23,28 @@ def test_trade_after_victory():
 
 
 @given("an ended match with a winner")
-def winner_with_cards(packages_contract, admin, players, trade_ctx):
+def winner_with_cards(packages, admin, players, trade_ctx):
     winner = players["alice"]
     counterparty = players["bob"]
     trade_ctx.update({"winner": winner, "counterparty": counterparty, "admin": admin})
 
     # Mint cards for both players to enable trading.
     with boa.env.prank(admin):
-        packages_contract.grant_claim(winner)
-        packages_contract.grant_claim(counterparty)
+        packages.grant_claim(winner)
+        packages.grant_claim(counterparty)
     with boa.env.prank(winner):
-        packages_contract.claim_pack()
+        packages.claim_pack()
     with boa.env.prank(counterparty):
-        packages_contract.claim_pack()
+        packages.claim_pack()
 
-    trade_ctx["offered_card"] = packages_contract.cards_of(winner)[0]
-    trade_ctx["requested_card"] = packages_contract.cards_of(counterparty)[0]
+    trade_ctx["offered_card"] = packages.cards_of(winner)[0]
+    trade_ctx["requested_card"] = packages.cards_of(counterparty)[0]
 
 
 @when("the winner proposes a trade to another player")
-def propose_trade(packages_contract, trade_ctx):
+def propose_trade(packages, trade_ctx):
     with boa.env.prank(trade_ctx["winner"]):
-        packages_contract.trade(
+        packages.trade(
             trade_ctx["counterparty"],
             trade_ctx["offered_card"],
             trade_ctx["requested_card"],
@@ -53,16 +53,16 @@ def propose_trade(packages_contract, trade_ctx):
 
 
 @then("the trade is done on the blockchain")
-def trade_recorded(packages_contract, trade_ctx):
+def trade_recorded(packages, trade_ctx):
     assert trade_ctx.get("trade_executed")
-    assert packages_contract.get_trade_count() == 1
+    assert packages.get_trade_count() == 1
 
 
 @then("the offered card is transferred to the other player")
-def offered_card_transferred(packages_contract, trade_ctx):
-    assert packages_contract.card_owner(trade_ctx["offered_card"]) == trade_ctx["counterparty"]
+def offered_card_transferred(packages, trade_ctx):
+    assert packages.card_owner(trade_ctx["offered_card"]) == trade_ctx["counterparty"]
 
 
 @then("the requested card is transferred to the winner")
-def requested_card_transferred(packages_contract, trade_ctx):
-    assert packages_contract.card_owner(trade_ctx["requested_card"]) == trade_ctx["winner"]
+def requested_card_transferred(packages, trade_ctx):
+    assert packages.card_owner(trade_ctx["requested_card"]) == trade_ctx["winner"]

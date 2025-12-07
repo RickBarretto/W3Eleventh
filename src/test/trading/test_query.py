@@ -7,28 +7,28 @@ def trade_ctx():
     return {}
 
 @given("an ended match with a winner")
-def winner_with_cards(packages_contract, admin, players, trade_ctx):
+def winner_with_cards(packages, admin, players, trade_ctx):
     winner = players["alice"]
     counterparty = players["bob"]
     trade_ctx.update({"winner": winner, "counterparty": counterparty, "admin": admin})
 
     # Mint cards for both players to enable trading.
     with boa.env.prank(admin):
-        packages_contract.grant_claim(winner)
-        packages_contract.grant_claim(counterparty)
+        packages.grant_claim(winner)
+        packages.grant_claim(counterparty)
     with boa.env.prank(winner):
-        packages_contract.claim_pack()
+        packages.claim_pack()
     with boa.env.prank(counterparty):
-        packages_contract.claim_pack()
+        packages.claim_pack()
 
-    trade_ctx["offered_card"] = packages_contract.cards_of(winner)[0]
-    trade_ctx["requested_card"] = packages_contract.cards_of(counterparty)[0]
+    trade_ctx["offered_card"] = packages.cards_of(winner)[0]
+    trade_ctx["requested_card"] = packages.cards_of(counterparty)[0]
 
 
 @when("the winner proposes a trade to another player")
-def propose_trade(packages_contract, trade_ctx):
+def propose_trade(packages, trade_ctx):
     with boa.env.prank(trade_ctx["winner"]):
-        packages_contract.trade(
+        packages.trade(
             trade_ctx["counterparty"],
             trade_ctx["offered_card"],
             trade_ctx["requested_card"],
@@ -51,15 +51,15 @@ def test_trade_after_victory():
 
 
 @given("two players have traded cards")
-def players_have_traded(packages_contract, admin, players, trade_ctx):
-    winner_with_cards(packages_contract, admin, players, trade_ctx)
-    propose_trade(packages_contract, trade_ctx)
+def players_have_traded(packages, admin, players, trade_ctx):
+    winner_with_cards(packages, admin, players, trade_ctx)
+    propose_trade(packages, trade_ctx)
 
 
 @when("querying the blockchain for trade history")
-def query_trade_history(packages_contract, trade_ctx):
-    trade_ctx["trade_count"] = packages_contract.get_trade_count()
-    trade_ctx["trade_details"] = packages_contract.get_trade(0)
+def query_trade_history(packages, trade_ctx):
+    trade_ctx["trade_count"] = packages.get_trade_count()
+    trade_ctx["trade_details"] = packages.get_trade(0)
 
 
 @then("the response includes details of the trade")

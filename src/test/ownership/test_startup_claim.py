@@ -25,19 +25,19 @@ def test_claim_at_startup():
 
 
 @given("a player without any cards")
-def player_without_cards(packages_contract, players, ownership_ctx):
+def player_without_cards(packages, players, ownership_ctx):
     player = players["alice"]
     ownership_ctx["player"] = player
-    assert len(packages_contract.cards_of(player)) == 0
+    assert len(packages.cards_of(player)) == 0
 
 
 @when("the player registers on the platform")
-def register_player(packages_contract, ownership_ctx):
+def register_player(packages, ownership_ctx):
     player = ownership_ctx["player"]
     with boa.env.prank(player):
-        packages_contract.register_player()
+        packages.register_player()
 
 
 @then("the player is granted rights to claim a beginner card pack")
-def beginner_claim_rights(packages_contract, ownership_ctx):
-    assert packages_contract.claim_rights(ownership_ctx["player"])
+def beginner_claim_rights(packages, ownership_ctx):
+    assert packages.claim_rights(ownership_ctx["player"])

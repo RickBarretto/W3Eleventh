@@ -31,23 +31,23 @@ def any_player(players, admin, ownership_ctx):
 
 
 @when("the player claims a card pack")
-def claim_card_pack(packages_contract, ownership_ctx):
+def claim_card_pack(packages, ownership_ctx):
     player = ownership_ctx["player"]
     admin = ownership_ctx["admin"]
     with boa.env.prank(admin):
-        packages_contract.grant_claim(player)
+        packages.grant_claim(player)
     with boa.env.prank(player):
-        pack_id = packages_contract.claim_pack()
+        pack_id = packages.claim_pack()
     ownership_ctx["pack_id"] = pack_id
-    ownership_ctx["cards"] = list(packages_contract.cards_of(player))
+    ownership_ctx["cards"] = list(packages.cards_of(player))
 
 
 @then("the card package is created on the blockchain")
-def package_created(packages_contract, ownership_ctx):
+def package_created(packages, ownership_ctx):
     pack_id = ownership_ctx["pack_id"]
     player = ownership_ctx["player"]
     assert pack_id > 0
-    assert packages_contract.pack_owner(pack_id) == player
+    assert packages.pack_owner(pack_id) == player
 
 
 @then("each card has unique identifiers")
@@ -58,14 +58,14 @@ def unique_cards(ownership_ctx):
 
 
 @then("the player is registered as the owner of the card pack")
-def pack_owner_recorded(packages_contract, ownership_ctx):
+def pack_owner_recorded(packages, ownership_ctx):
     pack_id = ownership_ctx["pack_id"]
     player = ownership_ctx["player"]
-    assert packages_contract.pack_owner(pack_id) == player
+    assert packages.pack_owner(pack_id) == player
 
 
 @then("the package is registered as opened")
-def pack_marked_opened(packages_contract, ownership_ctx):
+def pack_marked_opened(packages, ownership_ctx):
     pack_id = ownership_ctx["pack_id"]
-    assert packages_contract.pack_opened(pack_id)
+    assert packages.pack_opened(pack_id)
 

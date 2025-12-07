@@ -30,14 +30,14 @@ def player_with_win_history(players, ownership_ctx):
 
 
 @when("the player reaches a win milestone of 5 sequential wins")
-def reach_win_milestone(packages_contract, admin, ownership_ctx):
+def reach_win_milestone(packages, admin, ownership_ctx):
     player = ownership_ctx["player"]
     for _ in range(5):
         with boa.env.prank(admin):
-            packages_contract.record_win(player)
+            packages.record_win(player)
 
 
 @then("the player is granted rights to claim a special card pack")
-def special_claim_granted(packages_contract, ownership_ctx):
-    assert packages_contract.claim_rights(ownership_ctx["player"])
+def special_claim_granted(packages, ownership_ctx):
+    assert packages.claim_rights(ownership_ctx["player"])
 

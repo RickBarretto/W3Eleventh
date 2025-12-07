@@ -8,15 +8,15 @@ def ownership_ctx():
     return {}
 
 
-def claim_card_pack(packages_contract, ownership_ctx):
+def claim_card_pack(packages, ownership_ctx):
     player = ownership_ctx["player"]
     admin = ownership_ctx["admin"]
     with boa.env.prank(admin):
-        packages_contract.grant_claim(player)
+        packages.grant_claim(player)
     with boa.env.prank(player):
-        pack_id = packages_contract.claim_pack()
+        pack_id = packages.claim_pack()
     ownership_ctx["pack_id"] = pack_id
-    ownership_ctx["cards"] = list(packages_contract.cards_of(player))
+    ownership_ctx["cards"] = list(packages.cards_of(player))
 
 
 @given("the blockchain is operational")
@@ -40,13 +40,13 @@ def any_player(players, admin, ownership_ctx):
 
 
 @when("querying the blockchain for the card ownership")
-def query_card_owner(packages_contract, ownership_ctx):
+def query_card_owner(packages, ownership_ctx):
     # Ensure the player has a card to query.
     if "cards" not in ownership_ctx:
-        claim_card_pack(packages_contract, ownership_ctx)
+        claim_card_pack(packages, ownership_ctx)
     card_id = ownership_ctx["cards"][0]
     ownership_ctx["queried_card"] = card_id
-    ownership_ctx["queried_owner"] = packages_contract.card_owner(card_id)
+    ownership_ctx["queried_owner"] = packages.card_owner(card_id)
 
 
 @then("the response shows the owner of that card")
