@@ -40,7 +40,7 @@ def players():
 
 
 @pytest.fixture
-def matches_contract():
+def matches():
     """Match contract instance"""
     return Matches()
 

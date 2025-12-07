@@ -33,45 +33,45 @@ def host_ready(players, context):
 
 
 @when("a match is initiated")
-def create_match(matches_contract, context):
+def create_match(matches, context):
     host = context["host"]
     with boa.env.prank(host):
-        context["match_id"] = matches_contract.create_match()
+        context["match_id"] = matches.create_match()
 
 @then("the match is recorded on the blockchain")
-def match_recorded(matches_contract, context):
+def match_recorded(matches, context):
     match_id = context["match_id"]
-    host, _, status, _, _, _ = matches_contract.matches(match_id)
+    host, _, status, _, _, _ = matches.matches(match_id)
     assert host != ZERO_ADDRESS
     assert status == 0
 
 
 @then("the host is registered as the match host")
-def host_is_registered(matches_contract, context):
+def host_is_registered(matches, context):
     match_id = context["match_id"]
     host = context["host"]
-    stored_host, _, _, _, _, _ = matches_contract.matches(match_id)
+    stored_host, _, _, _, _, _ = matches.matches(match_id)
     assert stored_host == host
 
 
 @then("the status is set to 0 (waiting)")
-def status_waiting(matches_contract, context):
+def status_waiting(matches, context):
     match_id = context["match_id"]
-    _, _, status, _, _, _ = matches_contract.matches(match_id)
+    _, _, status, _, _, _ = matches.matches(match_id)
     assert status == 0
 
 
 @then("there is no guest yet")
-def no_guest(matches_contract, context):
+def no_guest(matches, context):
     match_id = context["match_id"]
-    _, guest, _, _, _, _ = matches_contract.matches(match_id)
+    _, guest, _, _, _, _ = matches.matches(match_id)
     assert guest == ZERO_ADDRESS
 
 
 @then("there is no winner yet")
-def no_winner(matches_contract, context):
+def no_winner(matches, context):
     match_id = context["match_id"]
-    _, _, _, _, _, winner = matches_contract.matches(match_id)
+    _, _, _, _, _, winner = matches.matches(match_id)
     assert winner == ZERO_ADDRESS
 
 

@@ -27,26 +27,26 @@ def unique_players(players):
 
 
 @given("a match exists on the blockchain")
-def match_exists(matches_contract, players, context):
+def match_exists(matches, players, context):
     host = players["alice"]
     guest = players["bob"]
     with boa.env.prank(host):
-        match_id = matches_contract.create_match()
+        match_id = matches.create_match()
     with boa.env.prank(guest):
-        matches_contract.join_match(match_id)
+        matches.join_match(match_id)
     # set squads and result to populate data
     with boa.env.prank(host):
-        matches_contract.choose_squad(match_id, b"host-squad")
+        matches.choose_squad(match_id, b"host-squad")
     with boa.env.prank(guest):
-        matches_contract.choose_squad(match_id, b"guest-squad")
+        matches.choose_squad(match_id, b"guest-squad")
     with boa.env.prank(host):
-        matches_contract.report_result(match_id, host)
+        matches.report_result(match_id, host)
     context.update({"match_id": match_id, "host": host, "guest": guest})
 
 
 @when("querying the blockchain for match details")
-def query_match(matches_contract, context):
-    context["details"] = matches_contract.get_match(context["match_id"])
+def query_match(matches, context):
+    context["details"] = matches.get_match(context["match_id"])
 
 
 @then("the response includes host, guest, status, squads, and winner")
