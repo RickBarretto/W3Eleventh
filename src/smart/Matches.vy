@@ -3,15 +3,15 @@ Match management contract.
 Status codes: 0 = waiting, 1 = in progress, 2 = completed.
 """
 
-MAX_SQUAD_LEN: constant(uint256) = 64
-MAX_MATCHES_PER_PLAYER: constant(uint256) = 256
+SQUAD_CAPACITY: constant(uint256) = 64
+MATCHES_IN_CHAMPIONSHIP: constant(uint256) = 256
 
 struct Match:
 	host: address
 	guest: address
 	status: uint256
-	host_squad: Bytes[MAX_SQUAD_LEN]
-	guest_squad: Bytes[MAX_SQUAD_LEN]
+	host_squad: Bytes[SQUAD_CAPACITY]
+	guest_squad: Bytes[SQUAD_CAPACITY]
 	winner: address
 
 event MatchCreated:
@@ -25,7 +25,7 @@ event MatchJoined:
 event SquadChosen:
 	match_id: uint256
 	player: address
-	squad: Bytes[MAX_SQUAD_LEN]
+	squad: Bytes[SQUAD_CAPACITY]
 
 event ResultReported:
 	match_id: uint256
@@ -34,7 +34,7 @@ event ResultReported:
 matches: public(HashMap[uint256, Match])
 next_match_id: public(uint256)
 player_active_match: public(HashMap[address, uint256])
-player_matches: HashMap[address, DynArray[uint256, MAX_MATCHES_PER_PLAYER]]
+player_matches: HashMap[address, DynArray[uint256, MATCHES_IN_CHAMPIONSHIP]]
 
 
 @deploy
@@ -44,7 +44,9 @@ def __init__():
 
 @view
 @external
-def get_player_matches(player: address) -> DynArray[uint256, MAX_MATCHES_PER_PLAYER]:
+def get_player_matches(
+	player: address
+) -> DynArray[uint256, MATCHES_IN_CHAMPIONSHIP]:
 	return self.player_matches[player]
 
 
@@ -91,7 +93,7 @@ def join_match(match_id: uint256):
 
 
 @external
-def choose_squad(match_id: uint256, squad: Bytes[MAX_SQUAD_LEN]):
+def choose_squad(match_id: uint256, squad: Bytes[SQUAD_CAPACITY]):
 	match_: Match = self.matches[match_id]
 	assert match_.host != empty(address), "unknown match"
 	assert match_.status != 2, "match completed"
@@ -131,15 +133,24 @@ def report_result(match_id: uint256, winner: address):
 
 @view
 @external
-def get_match(match_id: uint256) -> (address, address, uint256, Bytes[MAX_SQUAD_LEN], Bytes[MAX_SQUAD_LEN], address):
+def get_match(match_id: uint256) -> (
+	address, 
+	address, 
+	uint256, 
+	Bytes[SQUAD_CAPACITY], 
+	Bytes[SQUAD_CAPACITY], 
+	address
+):
 	match_: Match = self.matches[match_id]
+
 	assert match_.host != empty(address), "unknown match"
 	return match_.host, match_.guest, match_.status, match_.host_squad, match_.guest_squad, match_.winner
 
 
 @internal
 def _append_player_match(player: address, match_id: uint256):
-	arr: DynArray[uint256, MAX_MATCHES_PER_PLAYER] = self.player_matches[player]
-	assert len(arr) < MAX_MATCHES_PER_PLAYER, "too many matches"
+	arr: DynArray[uint256, MATCHES_IN_CHAMPIONSHIP] = self.player_matches[player]
+	assert len(arr) < MATCHES_IN_CHAMPIONSHIP, "too many matches"
+
 	arr.append(match_id)
 	self.player_matches[player] = arr
