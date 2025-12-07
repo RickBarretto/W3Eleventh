@@ -3,11 +3,6 @@ import pytest
 from pytest_bdd import *
 
 
-pytest_plugins = [
-	"src.test.common.steps",
-]
-
-
 ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 
