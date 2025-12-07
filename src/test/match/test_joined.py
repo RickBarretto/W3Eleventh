@@ -7,7 +7,7 @@ ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 
 @pytest.fixture
-def match_ctx():
+def context():
     return {}
 
 
@@ -27,38 +27,38 @@ def unique_players(players):
 
 
 @given("a waiting match")
-def waiting_match(matches_contract, players, match_ctx):
+def waiting_match(matches_contract, players, context):
     host = players["alice"]
     with boa.env.prank(host):
-        match_ctx["match_id"] = matches_contract.create_match()
-    match_ctx["host"] = host
+        context["match_id"] = matches_contract.create_match()
+    context["host"] = host
 
 
 @when("another player joins the match")
-def join_waiting_match(matches_contract, players, match_ctx):
-    match_id = match_ctx["match_id"]
+def join_waiting_match(matches_contract, players, context):
+    match_id = context["match_id"]
     guest = players["bob"]
-    match_ctx["guest"] = guest
+    context["guest"] = guest
     with boa.env.prank(guest):
         matches_contract.join_match(match_id)
 
 
 @then("the match is updated on the blockchain")
-def match_updated(matches_contract, match_ctx):
-    match_id = match_ctx["match_id"]
+def match_updated(matches_contract, context):
+    match_id = context["match_id"]
     _, _, status, *_ = matches_contract.matches(match_id)
     assert status in (1, 2)
 
 
 @then("the guest is registered as the guest player")
-def guest_registered(matches_contract, match_ctx):
-    match_id = match_ctx["match_id"]
+def guest_registered(matches_contract, context):
+    match_id = context["match_id"]
     _, guest, *_ = matches_contract.matches(match_id)
-    assert guest == match_ctx["guest"]
+    assert guest == context["guest"]
 
 
 @then("the status is set to 1 (in progress)")
-def status_in_progress(matches_contract, match_ctx):
-    match_id = match_ctx["match_id"]
+def status_in_progress(matches_contract, context):
+    match_id = context["match_id"]
     _, _, status, *_ = matches_contract.matches(match_id)
     assert status == 1

@@ -7,7 +7,7 @@ ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 
 @pytest.fixture
-def match_ctx():
+def context():
     return {}
 
 
@@ -27,7 +27,7 @@ def unique_players(players):
 
 
 @given("a player has participated in matches")
-def player_with_history(matches_contract, players, match_ctx):
+def player_with_history(matches_contract, players, context):
     player = players["alice"]
     other = players["bob"]
     third = players["carol"]
@@ -56,16 +56,16 @@ def player_with_history(matches_contract, players, match_ctx):
     with boa.env.prank(player):
         matches_contract.report_result(second_id, player)
 
-    match_ctx.update({"player": player, "history": [first_id, second_id]})
+    context.update({"player": player, "history": [first_id, second_id]})
 
 
 @when("querying the blockchain for matches involving the player")
-def query_player_matches(matches_contract, match_ctx):
-    match_ctx["player_matches"] = list(matches_contract.get_player_matches(match_ctx["player"]))
+def query_player_matches(matches_contract, context):
+    context["player_matches"] = list(matches_contract.get_player_matches(context["player"]))
 
 
 @then("the response includes all matches where the player is host or guest")
-def all_matches_returned(match_ctx):
-    returned = set(match_ctx["player_matches"])
-    expected = set(match_ctx["history"])
+def all_matches_returned(context):
+    returned = set(context["player_matches"])
+    expected = set(context["history"])
     assert expected.issubset(returned)

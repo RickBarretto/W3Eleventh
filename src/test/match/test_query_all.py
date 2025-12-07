@@ -7,7 +7,7 @@ ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 
 @pytest.fixture
-def match_ctx():
+def context():
     return {}
 
 
@@ -27,7 +27,7 @@ def unique_players(players):
 
 
 @given("a match exists on the blockchain")
-def match_exists(matches_contract, players, match_ctx):
+def match_exists(matches_contract, players, context):
     host = players["alice"]
     guest = players["bob"]
     with boa.env.prank(host):
@@ -41,17 +41,17 @@ def match_exists(matches_contract, players, match_ctx):
         matches_contract.choose_squad(match_id, b"guest-squad")
     with boa.env.prank(host):
         matches_contract.report_result(match_id, host)
-    match_ctx.update({"match_id": match_id, "host": host, "guest": guest})
+    context.update({"match_id": match_id, "host": host, "guest": guest})
 
 
 @when("querying the blockchain for match details")
-def query_match(matches_contract, match_ctx):
-    match_ctx["details"] = matches_contract.get_match(match_ctx["match_id"])
+def query_match(matches_contract, context):
+    context["details"] = matches_contract.get_match(context["match_id"])
 
 
 @then("the response includes host, guest, status, squads, and winner")
-def response_has_all_fields(match_ctx):
-    host, guest, status, host_squad, guest_squad, winner = match_ctx["details"]
+def response_has_all_fields(context):
+    host, guest, status, host_squad, guest_squad, winner = context["details"]
     assert host != ZERO_ADDRESS
     assert guest != ZERO_ADDRESS
     assert status in (1, 2)
