@@ -4,7 +4,7 @@ from pytest_bdd import *
 
 
 @pytest.fixture
-def trade_ctx():
+def trading():
     return {}
 
 
@@ -23,10 +23,10 @@ def test_trade_after_victory():
 
 
 @given("an ended match with a winner")
-def winner_with_cards(packages, admin, players, trade_ctx):
+def winner_with_cards(packages, admin, players, trading):
     winner = players["alice"]
     counterparty = players["bob"]
-    trade_ctx.update({"winner": winner, "counterparty": counterparty, "admin": admin})
+    trading.update({"winner": winner, "counterparty": counterparty, "admin": admin})
 
     # Mint cards for both players to enable trading.
     with boa.env.prank(admin):
@@ -37,32 +37,32 @@ def winner_with_cards(packages, admin, players, trade_ctx):
     with boa.env.prank(counterparty):
         packages.claim_pack()
 
-    trade_ctx["offered_card"] = packages.cards_of(winner)[0]
-    trade_ctx["requested_card"] = packages.cards_of(counterparty)[0]
+    trading["offered_card"] = packages.cards_of(winner)[0]
+    trading["requested_card"] = packages.cards_of(counterparty)[0]
 
 
 @when("the winner proposes a trade to another player")
-def propose_trade(packages, trade_ctx):
-    with boa.env.prank(trade_ctx["winner"]):
+def propose_trade(packages, trading):
+    with boa.env.prank(trading["winner"]):
         packages.trade(
-            trade_ctx["counterparty"],
-            trade_ctx["offered_card"],
-            trade_ctx["requested_card"],
+            trading["counterparty"],
+            trading["offered_card"],
+            trading["requested_card"],
         )
-    trade_ctx["trade_executed"] = True
+    trading["trade_executed"] = True
 
 
 @then("the trade is done on the blockchain")
-def trade_recorded(packages, trade_ctx):
-    assert trade_ctx.get("trade_executed")
+def trade_recorded(packages, trading):
+    assert trading.get("trade_executed")
     assert packages.get_trade_count() == 1
 
 
 @then("the offered card is transferred to the other player")
-def offered_card_transferred(packages, trade_ctx):
-    assert packages.card_owner(trade_ctx["offered_card"]) == trade_ctx["counterparty"]
+def offered_card_transferred(packages, trading):
+    assert packages.card_owner(trading["offered_card"]) == trading["counterparty"]
 
 
 @then("the requested card is transferred to the winner")
-def requested_card_transferred(packages, trade_ctx):
-    assert packages.card_owner(trade_ctx["requested_card"]) == trade_ctx["winner"]
+def requested_card_transferred(packages, trading):
+    assert packages.card_owner(trading["requested_card"]) == trading["winner"]

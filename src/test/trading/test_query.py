@@ -3,14 +3,14 @@ import pytest
 from pytest_bdd import *
 
 @pytest.fixture
-def trade_ctx():
+def trading():
     return {}
 
 @given("an ended match with a winner")
-def winner_with_cards(packages, admin, players, trade_ctx):
+def winner_with_cards(packages, admin, players, trading):
     winner = players["alice"]
     counterparty = players["bob"]
-    trade_ctx.update({"winner": winner, "counterparty": counterparty, "admin": admin})
+    trading.update({"winner": winner, "counterparty": counterparty, "admin": admin})
 
     # Mint cards for both players to enable trading.
     with boa.env.prank(admin):
@@ -21,19 +21,19 @@ def winner_with_cards(packages, admin, players, trade_ctx):
     with boa.env.prank(counterparty):
         packages.claim_pack()
 
-    trade_ctx["offered_card"] = packages.cards_of(winner)[0]
-    trade_ctx["requested_card"] = packages.cards_of(counterparty)[0]
+    trading["offered_card"] = packages.cards_of(winner)[0]
+    trading["requested_card"] = packages.cards_of(counterparty)[0]
 
 
 @when("the winner proposes a trade to another player")
-def propose_trade(packages, trade_ctx):
-    with boa.env.prank(trade_ctx["winner"]):
+def propose_trade(packages, trading):
+    with boa.env.prank(trading["winner"]):
         packages.trade(
-            trade_ctx["counterparty"],
-            trade_ctx["offered_card"],
-            trade_ctx["requested_card"],
+            trading["counterparty"],
+            trading["offered_card"],
+            trading["requested_card"],
         )
-    trade_ctx["trade_executed"] = True
+    trading["trade_executed"] = True
 
 
 @given("the blockchain is operational")
@@ -51,30 +51,30 @@ def test_trade_after_victory():
 
 
 @given("two players have traded cards")
-def players_have_traded(packages, admin, players, trade_ctx):
-    winner_with_cards(packages, admin, players, trade_ctx)
-    propose_trade(packages, trade_ctx)
+def players_have_traded(packages, admin, players, trading):
+    winner_with_cards(packages, admin, players, trading)
+    propose_trade(packages, trading)
 
 
 @when("querying the blockchain for trade history")
-def query_trade_history(packages, trade_ctx):
-    trade_ctx["trade_count"] = packages.get_trade_count()
-    trade_ctx["trade_details"] = packages.get_trade(0)
+def query_trade_history(packages, trading):
+    trading["trade_count"] = packages.get_trade_count()
+    trading["trade_details"] = packages.get_trade(0)
 
 
 @then("the response includes details of the trade")
-def response_includes_trade(trade_ctx):
-    assert trade_ctx["trade_count"] == 1
-    assert len(trade_ctx["trade_details"]) == 4
+def response_includes_trade(trading):
+    assert trading["trade_count"] == 1
+    assert len(trading["trade_details"]) == 4
 
 
 @then("the involved players")
-def response_includes_players(trade_ctx):
-    from_addr, to_addr, _, _ = trade_ctx["trade_details"]
-    assert {from_addr, to_addr} == {trade_ctx["winner"], trade_ctx["counterparty"]}
+def response_includes_players(trading):
+    from_addr, to_addr, _, _ = trading["trade_details"]
+    assert {from_addr, to_addr} == {trading["winner"], trading["counterparty"]}
 
 
 @then("the cards exchanged")
-def response_includes_cards(trade_ctx):
-    _, _, offered, requested = trade_ctx["trade_details"]
-    assert {offered, requested} == {trade_ctx["offered_card"], trade_ctx["requested_card"]}
+def response_includes_cards(trading):
+    _, _, offered, requested = trading["trade_details"]
+    assert {offered, requested} == {trading["offered_card"], trading["requested_card"]}
