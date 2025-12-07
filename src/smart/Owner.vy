@@ -1,16 +1,16 @@
 
 
-interface ICards:
+interface Cards:
     def card() -> uint256: view
 
 cards: address
 
 @deploy
-def __init__(cards_address: address):
-    self.cards = cards_address
+def __init__(_cards: address):
+    self.cards = _cards
 
 
 @external
 @view
 def get_card() -> uint256:
-    return staticcall ICards(self.cards).card()
+    return staticcall Cards(self.cards).card()
