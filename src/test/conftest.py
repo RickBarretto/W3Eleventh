@@ -5,6 +5,9 @@ from pathlib import Path
 import boa
 import pytest
 
+from src.smart import Matches
+from src.smart import Packages
+
 ROOT_DIR = Path(__file__).resolve().parents[2]
 CONTRACTS_DIR = ROOT_DIR / "src" / "smart"
 
@@ -39,11 +42,11 @@ def players():
 @pytest.fixture
 def matches_contract():
     """Match contract instance"""
-    return boa.load(str(CONTRACTS_DIR / "Matches.vy"))
+    return Matches()
 
 
 @pytest.fixture
 def packages_contract(admin):
     """Packages contract instance"""
     with boa.env.prank(admin):
-        return boa.load(str(CONTRACTS_DIR / "Packages.vy"), admin)
+        return Packages(admin)
