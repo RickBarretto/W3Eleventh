@@ -170,6 +170,11 @@ class MenuScreen(Screen):
 		label = self.query_one(f"#claim-status-{player}", Label)
 		state = "Claim rights: available" if allowed else "Claim rights: locked"
 		label.update(state)
+		self._set_claim_button_state(player, allowed)
+
+	def _set_claim_button_state(self, player: str, allowed: bool) -> None:
+		button = self.query_one(f"#claim-{player}", Button)
+		button.disabled = not allowed
 
 	def _refresh_all_action_status(self) -> None:
 		for player in self.PLAYERS:
