@@ -88,7 +88,7 @@ class MenuScreen(Screen):
 			self._refresh_claim_status(player)
 		elif action == "enter":
 			self._set_action_status(player, "Entering the match lobby.")
-			self.app.push_screen(MatchScreen())
+			self.app.push_screen(MatchScreen(self.player_cards))
 		elif action == "cards":
 			cards = self.player_cards.get(player, [])
 			status = f"Owned cards: {cards}" if cards else "Owned cards: none"
