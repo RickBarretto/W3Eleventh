@@ -7,6 +7,8 @@ from textual.containers import Vertical
 from textual.screen import Screen
 from textual.widgets import Button, Footer, Header, Label, TabPane, TabbedContent
 
+from app.ui.match import MatchScreen
+
 
 class MenuScreen(Screen):
 	"""Menu screen with a tab per user."""
@@ -86,6 +88,7 @@ class MenuScreen(Screen):
 			self._refresh_claim_status(player)
 		elif action == "enter":
 			self._set_action_status(player, "Entering the match lobby.")
+			self.app.push_screen(MatchScreen())
 		elif action == "cards":
 			cards = self.player_cards.get(player, [])
 			status = f"Owned cards: {cards}" if cards else "Owned cards: none"
