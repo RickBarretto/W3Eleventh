@@ -5,8 +5,8 @@ from pathlib import Path
 import boa
 import pytest
 
-from src.smart import Matches
-from src.smart import Packages
+from smart import Matches
+from smart import Packages
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
 CONTRACTS_DIR = ROOT_DIR / "src" / "smart"
