@@ -2,7 +2,7 @@ from textual.app import App, ComposeResult
 from textual.containers import Center
 from textual.widgets import Footer, Header, Label, Button
 
-from app.ui.login import LoginScreen
+from app.ui.menu import MenuScreen
 
 class Eleventh(App):
 
@@ -39,4 +39,4 @@ class Eleventh(App):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "start":
-            self.push_screen(LoginScreen())
+            self.push_screen(MenuScreen())
