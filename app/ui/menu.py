@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import List
 
 from textual.app import ComposeResult
-from textual.containers import Vertical
+from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.screen import Screen
 from textual.widgets import Button, Footer, Header, Label, TabPane, TabbedContent
 
@@ -21,7 +21,20 @@ class MenuScreen(Screen):
 		height: 1fr;
 	}
 
-	TabPane > .menu-column {
+	TabPane > .menu-layout {
+		height: 1fr;
+	}
+
+	.menu-column {
+		width: 32;
+		min-width: 28;
+		padding: 1 2;
+		content-align: left top;
+	}
+
+	.menu-status {
+		width: 1fr;
+		height: 1fr;
 		padding: 1 2;
 		content-align: left top;
 	}
@@ -52,16 +65,20 @@ class MenuScreen(Screen):
 		with TabbedContent(initial=self.PLAYERS[0]):
 			for player in self.PLAYERS:
 				with TabPane(player.title(), id=player):
-					yield Vertical(
-						Label(f"Player: {player.title()}", classes="menu-title"),
-						Button("Enter match", id=f"enter-{player}", variant="primary"),
-						Button("List cards", id=f"cards-{player}", variant="primary"),
-						Button("List old matches", id=f"old-{player}", variant="primary"),
-						Button("Claim pack", id=f"claim-{player}", variant="success"),
-						Label("", id=f"claim-status-{player}", classes="claim-status"),
-						Label("", id=f"action-status-{player}", classes="action-status"),
-						classes="menu-column",
-					)
+					with Horizontal(classes="menu-layout"):
+						yield Vertical(
+							Label(f"Player: {player.title()}", classes="menu-title"),
+							Button("Enter match", id=f"enter-{player}", variant="primary"),
+							Button("List cards", id=f"cards-{player}", variant="primary"),
+							Button("List old matches", id=f"old-{player}", variant="primary"),
+							Button("Claim pack", id=f"claim-{player}", variant="success"),
+							classes="menu-column",
+						)
+						with VerticalScroll(classes="menu-status"):
+							yield Label("Claim status", classes="menu-title")
+							yield Label("", id=f"claim-status-{player}", classes="claim-status")
+							yield Label("Details", classes="menu-title")
+							yield Label("", id=f"action-status-{player}", classes="action-status")
 		yield Footer()
 
 	def on_mount(self) -> None:
@@ -100,7 +117,8 @@ class MenuScreen(Screen):
 		if action == "claim":
 			try:
 				new_cards = self._claim_pack(player)
-				self._set_action_status(player, f"Pack claimed: {new_cards}")
+				card_lines = "\n".join(f"- Card {card_id}" for card_id in new_cards)
+				self._set_action_status(player, f"Pack claimed:\n{card_lines}")
 			except Exception as exc:
 				self._set_action_status(player, f"Claim failed: {exc}")
 			self._refresh_claim_status(player)
@@ -109,8 +127,11 @@ class MenuScreen(Screen):
 			self.app.push_screen(MatchScreen(self.player_cards, self.match_history))
 		elif action == "cards":
 			cards = self.player_cards.get(player, [])
-			status = f"Owned cards: {cards}" if cards else "Owned cards: none"
-			self._set_action_status(player, status)
+			if cards:
+				lines = "\n".join(f"- Card {card_id}" for card_id in cards)
+				self._set_action_status(player, f"Owned cards:\n{lines}")
+			else:
+				self._set_action_status(player, "Owned cards: none")
 		elif action == "old":
 			self._show_history(player)
 		else:
@@ -120,12 +141,12 @@ class MenuScreen(Screen):
 		if not self.match_history:
 			self._set_action_status(player, "No completed matches yet.")
 			return
-		last = self.match_history[-3:]
+		last = self.match_history[-10:]
 		summaries = [
-			f"winner={entry['winner']}, squads={entry['squads']}"
+			f"Winner: {entry['winner']} | Squads: {entry['squads']}"
 			for entry in last
 		]
-		self._set_action_status(player, " | ".join(summaries))
+		self._set_action_status(player, "Recent matches:\n" + "\n".join(summaries))
 
 	def _claim_pack(self, player: str) -> list[int]:
 		"""Claim a pack for the player, mirroring contract behavior with errors."""
@@ -157,4 +178,4 @@ class MenuScreen(Screen):
 	def _set_action_status(self, player: str, message: str) -> None:
 		self.action_messages[player] = message
 		label = self.query_one(f"#action-status-{player}", Label)
-		label.update(f"Status: {message}")
+		label.update(message)
