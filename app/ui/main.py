@@ -26,8 +26,8 @@ class Eleventh(App):
         yield Header(show_clock=True)
 
         with Center():
-            yield Label("[b]Eleventh W3[/b]", id="title", expand=True)
+            yield Label("[b]Eleventh[/b]", id="title", expand=True)
         with Center():
-            yield Button("Start", id="start", compact=True)
+            yield Button(">> Start <<", id="start", compact=True)
 
         yield Footer()
