@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from time import time
+
 from textual.app import ComposeResult
 from textual.containers import Vertical
 from textual.screen import Screen
@@ -40,9 +42,10 @@ class MatchScreen(Screen):
     }
     """
 
-    def __init__(self, player_cards: dict[str, list[int]] | None = None) -> None:
+    def __init__(self, player_cards: dict[str, list[int]] | None = None, match_history: list[dict] | None = None) -> None:
         super().__init__()
         self.player_cards: dict[str, list[int]] = player_cards or {p: [] for p in self.PLAYERS}
+        self.match_history = match_history if match_history is not None else []
         self.squads: dict[str, list[int]] = {}
         self.submitted: dict[str, bool] = {}
         self.winner: str | None = None
@@ -132,6 +135,13 @@ class MatchScreen(Screen):
         self.winner = player
         for p in self.PLAYERS:
             self._set_status(p, f"Result reported, winner: {player}")
+        self.match_history.append(
+            {
+                "winner": player,
+                "squads": {k: v[:] for k, v in self.squads.items()},
+                "timestamp": time(),
+            }
+        )
         self._refresh_report_buttons()
 
     def _set_status(self, player: str, message: str) -> None:

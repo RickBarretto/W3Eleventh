@@ -44,6 +44,7 @@ class MenuScreen(Screen):
 		self.claim_rights: dict[str, bool] = {}
 		self.action_messages: dict[str, str] = {}
 		self.player_cards: dict[str, list[int]] = {}
+		self.match_history: list[dict] = []
 		self.next_card_id: int = 1
 
 	def compose(self) -> ComposeResult:
@@ -88,15 +89,26 @@ class MenuScreen(Screen):
 			self._refresh_claim_status(player)
 		elif action == "enter":
 			self._set_action_status(player, "Entering the match lobby.")
-			self.app.push_screen(MatchScreen(self.player_cards))
+			self.app.push_screen(MatchScreen(self.player_cards, self.match_history))
 		elif action == "cards":
 			cards = self.player_cards.get(player, [])
 			status = f"Owned cards: {cards}" if cards else "Owned cards: none"
 			self._set_action_status(player, status)
 		elif action == "old":
-			self._set_action_status(player, "Showing completed matches.")
+			self._show_history(player)
 		else:
 			self._set_action_status(player, "Unknown action")
+
+	def _show_history(self, player: str) -> None:
+		if not self.match_history:
+			self._set_action_status(player, "No completed matches yet.")
+			return
+		last = self.match_history[-3:]
+		summaries = [
+			f"winner={entry['winner']}, squads={entry['squads']}"
+			for entry in last
+		]
+		self._set_action_status(player, " | ".join(summaries))
 
 	def _claim_pack(self, player: str) -> list[int]:
 		"""Claim a pack for the player, mirroring contract behavior with errors."""
