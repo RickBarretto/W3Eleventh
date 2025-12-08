@@ -4,6 +4,9 @@ from textual.widgets import Footer, Header, Label, Button
 
 class Eleventh(App):
 
+    TITLE = "Eleventh"
+    SUB_TITLE = "Web3 ed."
+
     CSS = """
 
     Screen {
