@@ -1,6 +1,8 @@
 from textual.app import App, ComposeResult
-from textual.containers import Center, Vertical
+from textual.containers import Center
 from textual.widgets import Footer, Header, Label, Button
+
+from app.ui.login import LoginScreen
 
 class Eleventh(App):
 
@@ -34,3 +36,7 @@ class Eleventh(App):
             yield Button(">> Start <<", id="start", compact=True)
 
         yield Footer()
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "start":
+            self.push_screen(LoginScreen())
