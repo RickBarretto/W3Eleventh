@@ -64,9 +64,9 @@ class MenuScreen(Screen):
 		yield Footer()
 
 	def on_mount(self) -> None:
-		self.claim_rights = {player: player == "alice" for player in self.PLAYERS}
-		self.action_messages = {player: "Idle" for player in self.PLAYERS}
 		self.player_cards = {player: [] for player in self.PLAYERS}
+		self.claim_rights = {player: True for player in self.PLAYERS}
+		self.action_messages = {player: "Idle" for player in self.PLAYERS}
 		self._refresh_all_claim_status()
 		self._refresh_all_action_status()
 
