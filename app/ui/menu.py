@@ -66,10 +66,27 @@ class MenuScreen(Screen):
 
 	def on_mount(self) -> None:
 		self.player_cards = {player: [] for player in self.PLAYERS}
-		self.claim_rights = {player: True for player in self.PLAYERS}
+		self._recompute_claim_rights()
 		self.action_messages = {player: "Idle" for player in self.PLAYERS}
 		self._refresh_all_claim_status()
 		self._refresh_all_action_status()
+
+	def on_show(self) -> None:
+		self._recompute_claim_rights()
+		self._refresh_all_claim_status()
+
+	def _recompute_claim_rights(self) -> None:
+		win_counts = {player: 0 for player in self.PLAYERS}
+		for entry in self.match_history:
+			winner = entry.get("winner")
+			if winner in win_counts:
+				win_counts[winner] += 1
+
+		self.claim_rights = {}
+		for player in self.PLAYERS:
+			has_cards = bool(self.player_cards.get(player))
+			has_streak = win_counts.get(player, 0) >= 5
+			self.claim_rights[player] = (not has_cards) or has_streak
 
 	def on_button_pressed(self, event: Button.Pressed) -> None:
 		button_id = event.button.id or ""
