@@ -8,6 +8,8 @@ dependencies = [
     "pytest>=9.0.2",
     "pytest-bdd>=7.2.0",
     "rich>=14.2.0",
+    "textual>=6.8.0",
     "titanoboa>=0.2.8",
     "vyper>=0.4.3",
 ]
+
