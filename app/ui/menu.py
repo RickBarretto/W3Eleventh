@@ -41,6 +41,8 @@ class MenuScreen(Screen):
 		super().__init__()
 		self.claim_rights: dict[str, bool] = {}
 		self.action_messages: dict[str, str] = {}
+		self.player_cards: dict[str, list[int]] = {}
+		self.next_card_id: int = 1
 
 	def compose(self) -> ComposeResult:
 		yield Header(show_clock=True)
@@ -62,6 +64,7 @@ class MenuScreen(Screen):
 	def on_mount(self) -> None:
 		self.claim_rights = {player: player == "alice" for player in self.PLAYERS}
 		self.action_messages = {player: "Idle" for player in self.PLAYERS}
+		self.player_cards = {player: [] for player in self.PLAYERS}
 		self._refresh_all_claim_status()
 		self._refresh_all_action_status()
 
@@ -75,18 +78,35 @@ class MenuScreen(Screen):
 			return
 
 		if action == "claim":
-			if self.claim_rights.get(player, False):
-				self.claim_rights[player] = False
-				self._set_action_status(player, "Pack claimed; claim rights reset.")
-			else:
-				self._set_action_status(player, "Claim rejected: no rights yet.")
+			try:
+				new_cards = self._claim_pack(player)
+				self._set_action_status(player, f"Pack claimed: {new_cards}")
+			except Exception as exc:
+				self._set_action_status(player, f"Claim failed: {exc}")
 			self._refresh_claim_status(player)
 		elif action == "enter":
 			self._set_action_status(player, "Entering the match lobby.")
 		elif action == "cards":
-			self._set_action_status(player, "Listing owned cards (see Ownership.feature).")
+			cards = self.player_cards.get(player, [])
+			status = f"Owned cards: {cards}" if cards else "Owned cards: none"
+			self._set_action_status(player, status)
 		elif action == "old":
 			self._set_action_status(player, "Showing completed matches.")
+		else:
+			self._set_action_status(player, "Unknown action")
+
+	def _claim_pack(self, player: str) -> list[int]:
+		"""Claim a pack for the player, mirroring contract behavior with errors."""
+		if not self.claim_rights.get(player, False):
+			raise PermissionError("no claim rights")
+
+		pack_size = 5
+		new_cards = list(range(self.next_card_id, self.next_card_id + pack_size))
+		self.next_card_id += pack_size
+
+		self.player_cards[player].extend(new_cards)
+		self.claim_rights[player] = False
+		return new_cards
 
 	def _refresh_all_claim_status(self) -> None:
 		for player in self.PLAYERS:
