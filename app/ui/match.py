@@ -37,7 +37,8 @@ class MatchScreen(Screen):
     }
 
     .menu-title {
-        text-style: bold;
+        color: $accent;
+        text-style: bold reverse;
     }
 
     .claim-status {

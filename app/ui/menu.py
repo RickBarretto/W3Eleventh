@@ -51,16 +51,10 @@ class MenuScreen(Screen):
 	}
 
 	.menu-title {
-		text-style: bold;
+		color: $accent;
+		text-style: bold reverse;
 	}
 
-	.claim-status {
-		color: green;
-	}
-
-	.action-status {
-		color: yellow;
-	}
 	"""
 
 	def __init__(self) -> None:
