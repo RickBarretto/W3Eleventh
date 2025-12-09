@@ -3,7 +3,7 @@
 <p align="center">⚽ <em>Only 11 wins</em> 🃏</p>
 
 <p align="center">
-    <img src=".project/images/cover.png" alt="Eleventh Cover" width="400" style="max-width:100%;">
+    <img src="cover.png" alt="Eleventh Cover" width="400" style="max-width:100%;">
 </p>
 
 **Eleventh** is a turn-based card game inspired by FIFA’s Ultimate Team cards and the strategic style of Soccer Manager.
