@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "blodwynn.featurehighlight",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.debugpy",
+        "ms-python.vscode-python-envs",
+        "tintinweb.vscode-vyper"
+    ]
+}
