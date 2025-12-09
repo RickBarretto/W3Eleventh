@@ -94,3 +94,20 @@ Click on the **_Testing_** tab, then **_Run Tests_** button:
 ![VsCode Integration](vscode-tests.png)
 
 <small align="center">Make sure you've installed the Python extension from recommendation.</small>
+
+## Toolings
+
+Initially, the only tool you need to install is `mise`. And this takes care of all the rest,
+including Python, then uv, and then its dependencies.
+
+Make sure you've installed the recommended extensions for Visual Studio Code.
+
+### Tools
+- Mise
+- Python 3.12.12
+- uv
+
+### Libraries
+- Vyper & Titanoboa: For Smart Contracts
+- Pytest & Pytest BDD: For testing
+- Rich & Textual: For the Demo's TUI
