@@ -61,6 +61,7 @@ class MatchScreen(Screen):
         for player in self.PLAYERS:
             self.submitted[player] = False
         self.winner = None
+        self._preselect_default_cards()
         self._refresh_report_buttons()
 
     def compose(self) -> ComposeResult:
@@ -154,6 +155,20 @@ class MatchScreen(Screen):
     def _set_status(self, player: str, message: str) -> None:
         label = self.query_one(f"#status-{player}", Label)
         label.update(f"Match status: {message}")
+
+    def _preselect_default_cards(self) -> None:
+        """Pre-select the first five cards for each player, if present."""
+        for player in self.PLAYERS:
+            cards_box = self.query_one(f"#cards-{player}", Vertical)
+            checkboxes = list(cards_box.query(Checkbox))
+            first_five = set(self.player_cards.get(player, [])[:5])
+            for cb in checkboxes:
+                try:
+                    card_id = int(cb.id.split("-")[-1]) if cb.id else None
+                except ValueError:
+                    card_id = None
+                if card_id in first_five:
+                    cb.value = True
 
     def _refresh_report_buttons(self) -> None:
         ready = len([p for p, done in self.submitted.items() if done]) >= 2 and not self.winner
