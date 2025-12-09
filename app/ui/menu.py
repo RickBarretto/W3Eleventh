@@ -32,6 +32,12 @@ class MenuScreen(Screen):
 		content-align: left top;
 	}
 
+	.menu-column Button {
+		padding: 0 1;
+		content-align: left middle;
+		border: round $accent;
+	}
+
 	.menu-status {
 		width: 1fr;
 		height: 1fr;
@@ -68,10 +74,10 @@ class MenuScreen(Screen):
 					with Horizontal(classes="menu-layout"):
 						yield Vertical(
 							Label(f"Player: {player.title()}", classes="menu-title"),
-							Button("Enter match", id=f"enter-{player}", variant="primary"),
-							Button("List cards", id=f"cards-{player}", variant="primary"),
-							Button("List old matches", id=f"old-{player}", variant="primary"),
-							Button("Claim pack", id=f"claim-{player}", variant="success"),
+							Button("Start", id=f"enter-{player}", compact=True),
+							Button("Team", id=f"cards-{player}", compact=True),
+							Button("History", id=f"old-{player}", compact=True),
+							Button("Claim", id=f"claim-{player}", compact=True),
 							classes="menu-column",
 						)
 						with VerticalScroll(classes="menu-status"):
