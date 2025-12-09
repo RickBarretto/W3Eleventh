@@ -43,6 +43,11 @@ class MatchScreen(Screen):
         color: yellow;
     }
 
+    Checkbox {
+        height: 1;
+        border: none;
+    }
+
     .match-column {
         padding: 1 2;
         content-align: left top;
