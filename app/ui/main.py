@@ -27,6 +27,9 @@ class Eleventh(App):
 
     """
 
+    def on_mount(self) -> None:
+        self.theme = "flexoki"
+
     def compose(self) -> ComposeResult:
         yield Header(show_clock=True)
 
