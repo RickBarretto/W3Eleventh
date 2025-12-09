@@ -8,6 +8,11 @@ from textual.screen import Screen
 from textual.widgets import Button, Footer, Header, Label, TabPane, TabbedContent, Checkbox
 
 
+class SquareCheckbox(Checkbox):
+    """Checkbox with square mark instead of X."""
+    BUTTON_INNER = "■"
+
+
 class MatchScreen(Screen):
     """Match lobby screen with tabs per player."""
 
@@ -79,7 +84,7 @@ class MatchScreen(Screen):
                         Label("Choose up to 5 cards:"),
                         Vertical(
                             *[
-                                Checkbox(f"Card #{card}", id=f"card-{player}-{card}")
+                                SquareCheckbox(f"Card #{card}", id=f"card-{player}-{card}")
                                 for card in self.player_cards.get(player, [])
                             ],
                             id=f"cards-{player}",
