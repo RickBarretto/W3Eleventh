@@ -19,6 +19,13 @@ class MatchScreen(Screen):
         height: 1fr;
     }
 
+    Button {
+		padding: 0 1;
+		height: auto;
+		content-align: left middle;
+		border: round $accent;
+	}
+
     TabPane > .menu-column {
         padding: 1 2;
         content-align: left top;
@@ -71,10 +78,10 @@ class MatchScreen(Screen):
                             ],
                             id=f"cards-{player}",
                         ),
-                        Button("Submit squad", id=f"submit-{player}", variant="success"),
+                        Button("Submit squad", id=f"submit-{player}", compact=True),
                         Label("Match status: waiting", id=f"status-{player}"),
-                        Button("Report result as winner", id=f"result-{player}", variant="warning"),
-                        Button("Back to menu", id="back", variant="primary"),
+                        Button("Report result as winner", id=f"result-{player}", compact=True),
+                        Button("Back to menu", id="back", compact=True),
                         classes="match-column",
                     )
         yield Footer()
