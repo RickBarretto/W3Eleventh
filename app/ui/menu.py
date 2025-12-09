@@ -3,9 +3,9 @@ from __future__ import annotations
 from typing import List
 
 from textual.app import ComposeResult
-from textual.containers import Horizontal, Vertical, VerticalScroll
+from textual.containers import Horizontal, Vertical, VerticalScroll, Center
 from textual.screen import Screen
-from textual.widgets import Button, Footer, Header, Label, TabPane, TabbedContent
+from textual.widgets import Button, Footer, Header, Label, TabPane, TabbedContent, Placeholder
 
 from app.ui.match import MatchScreen
 
@@ -34,6 +34,7 @@ class MenuScreen(Screen):
 
 	.menu-column Button {
 		padding: 0 1;
+		height: auto;
 		content-align: left middle;
 		border: round $accent;
 	}
@@ -41,12 +42,9 @@ class MenuScreen(Screen):
 	.menu-status {
 		width: 1fr;
 		height: 1fr;
+		border: vkey $accent;
 		padding: 1 2;
 		content-align: left top;
-	}
-
-	.menu {
-		border: vkey $accent;
 	}
 
 	.menu-title {
@@ -76,15 +74,15 @@ class MenuScreen(Screen):
 			for player in self.PLAYERS:
 				with TabPane(player.title(), id=player):
 					with Horizontal(classes="menu-layout"):
-						yield Vertical(
+						yield Center(
 							Label(f"Player: {player.title()}", classes="menu-title"),
 							Button("Start", id=f"enter-{player}", compact=True),
 							Button("Team", id=f"cards-{player}", compact=True),
 							Button("History", id=f"old-{player}", compact=True),
 							Button("Claim", id=f"claim-{player}", compact=True),
-							classes="menu menu-column",
+							classes="menu-column",
 						)
-						with VerticalScroll(classes="menu menu-status"):
+						with VerticalScroll(classes="menu-status"):
 							yield Label("Claim status", classes="menu-title")
 							yield Label("", id=f"claim-status-{player}", classes="claim-status")
 							yield Label("Details", classes="menu-title")
