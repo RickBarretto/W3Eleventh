@@ -15,11 +15,17 @@ CONTRACTS_DIR = ROOT_DIR / "src" / "smart"
 new_address = boa.env.generate_address
 
 
+def pytest_collection_modifyitems(items):
+    """Apply ignore_isolation marker to all tests to prevent boa plugin conflicts."""
+    for item in items:
+        item.add_marker(pytest.mark.ignore_isolation)
+
+
 @pytest.fixture(autouse=True)
 def boa_env():
     """Reset the environment after each test."""
     with boa.env.anchor():
-        yield
+        yield True
 
 
 @pytest.fixture
