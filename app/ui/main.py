@@ -18,10 +18,13 @@ class Eleventh(App):
     #title {
         text-align: center;
         width: 50%;
-        border: round white;
+        color: $accent;
+        border: vkey $accent;
     }
 
     #start {
+        color: $accent;
+        text-style: bold reverse;
         align: center middle;
     }
 
