@@ -4,7 +4,7 @@ python = "3.12"
 [settings]
 python.uv_venv_auto = true
 
-[tasks.client]
+[tasks.demo]
 run = "uv run python -m app"
 
 [tasks.test]
