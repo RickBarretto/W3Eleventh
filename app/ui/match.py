@@ -80,7 +80,7 @@ class MatchScreen(Screen):
                         ),
                         Button("Submit squad", id=f"submit-{player}", compact=True),
                         Label("Match status: waiting", id=f"status-{player}"),
-                        Button("Report result as winner", id=f"result-{player}", compact=True),
+                        Button("Finish", id=f"result-{player}", compact=True),
                         Button("Back to menu", id="back", compact=True),
                         classes="match-column",
                     )
