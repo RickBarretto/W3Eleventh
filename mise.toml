@@ -6,3 +6,6 @@ python.uv_venv_auto = true
 
 [tasks.client]
 run = "uv run python -m app"
+
+[tasks.test]
+run = "uv run pytest"
