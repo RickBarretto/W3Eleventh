@@ -45,6 +45,10 @@ class MenuScreen(Screen):
 		content-align: left top;
 	}
 
+	.menu {
+		border: vkey $accent;
+	}
+
 	.menu-title {
 		text-style: bold;
 	}
@@ -78,9 +82,9 @@ class MenuScreen(Screen):
 							Button("Team", id=f"cards-{player}", compact=True),
 							Button("History", id=f"old-{player}", compact=True),
 							Button("Claim", id=f"claim-{player}", compact=True),
-							classes="menu-column",
+							classes="menu menu-column",
 						)
-						with VerticalScroll(classes="menu-status"):
+						with VerticalScroll(classes="menu menu-status"):
 							yield Label("Claim status", classes="menu-title")
 							yield Label("", id=f"claim-status-{player}", classes="claim-status")
 							yield Label("Details", classes="menu-title")
